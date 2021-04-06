@@ -17,6 +17,11 @@ class SearchViewModel(private val searchRepoUseCase: SearchRepoUseCase) : BaseVi
     val searchRepoList: LiveData<List<Repo>>
         get() = _searchRepoList
 
+    private val _isLoading = MutableLiveData<Boolean>()
+    val isLoading: LiveData<Boolean>
+        get() = _isLoading
+
+
     fun fetchRepoSearch(query: String?) {
         addDisposable(searchRepoUseCase.getSearchResult(query?: "")
                 .observeOn(AndroidSchedulers.mainThread())
@@ -28,14 +33,8 @@ class SearchViewModel(private val searchRepoUseCase: SearchRepoUseCase) : BaseVi
         )
     }
 
-    fun showProgress(isLoading: Boolean, progressBar: ProgressBar, recyclerView: RecyclerView) {
-        if (isLoading) {
-            progressBar.visibility = View.VISIBLE
-            recyclerView.visibility = View.GONE
-        } else {
-            progressBar.visibility = View.GONE
-            recyclerView.visibility = View.VISIBLE
-        }
+    fun showProgress(isLoading: Boolean) {
+        _isLoading.value = isLoading
     }
 
 }

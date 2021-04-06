@@ -1,6 +1,5 @@
 package com.study.androidstudy_hoon.presenter.search
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -8,7 +7,7 @@ import com.bumptech.glide.Glide
 import com.study.androidstudy_hoon.data.dto.Repo
 import com.study.androidstudy_hoon.databinding.SearchResultItemBinding
 
-class SearchAdapter(val context: Context) : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
+class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
 
     private val _searchRepoList = arrayListOf<Repo>()
     var searchRepoList: List<Repo>
@@ -35,11 +34,13 @@ class SearchAdapter(val context: Context) : RecyclerView.Adapter<SearchAdapter.S
     inner class SearchViewHolder(private val binding: SearchResultItemBinding): RecyclerView.ViewHolder(binding.root) {
 
         fun bind(data: Repo) {
-            binding.repoLanguageTextView.text = data.language
-            binding.repoNameTextView.text = data.name
-            Glide.with(context)
-                    .load(data.owner.avatarUrl)
-                    .into(binding.repoThumbnailImgView)
+            with(binding) {
+                repoLanguageTextView.text = data.language
+                repoNameTextView.text = data.name
+                Glide.with(binding.root.context)
+                        .load(data.owner.avatarUrl)
+                        .into(repoThumbnailImgView)
+            }
         }
     }
 }
