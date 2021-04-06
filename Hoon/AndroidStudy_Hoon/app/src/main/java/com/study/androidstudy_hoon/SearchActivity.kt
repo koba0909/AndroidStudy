@@ -53,8 +53,10 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun initAdapter() {
-        binding.searchRecyclerView.adapter = searchAdapter
-        binding.searchRecyclerView.addItemDecoration(DividerItemDecoration(this, LinearLayoutManager.VERTICAL))
+        binding.searchRecyclerView.apply {
+            adapter = searchAdapter
+            addItemDecoration(DividerItemDecoration(this@SearchActivity, LinearLayoutManager.VERTICAL))
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
