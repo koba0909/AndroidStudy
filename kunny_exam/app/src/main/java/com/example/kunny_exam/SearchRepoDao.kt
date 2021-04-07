@@ -11,10 +11,10 @@ import io.reactivex.Observable
 @Dao
 interface SearchRepoDao {
     @Query("SELECT * FROM repositories")
-    fun getAllRepo() : Observable<List<SearchRepoInfo>>
+    fun getAllRepo() : Observable<List<RepoEntity>>
 
     @Insert(onConflict = REPLACE)
-    fun add(repo : SearchRepoInfo)
+    fun add(repo : RepoEntity)
 
 //    @Query("DELETE FROM repositories WHERE full_name")
 //    fun deleteRepo(fullName : String)

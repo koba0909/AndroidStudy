@@ -7,5 +7,5 @@ data class SearchRepoInfo(
         @SerializedName("full_name") val full_name: String?,
         @SerializedName("language") val language : String?,
         @SerializedName("stargazers_count") val stargazers_count : Int?,
-        @SerializedName("owner") public val ownerData : OwnerData?
+        @SerializedName("owner") val ownerData : OwnerData?
 )

@@ -7,8 +7,10 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kunny_exam.*
+import com.example.kunny_exam.data.OwnerData
 import com.example.kunny_exam.data.SearchRepoInfo
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.gson.annotations.SerializedName
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -58,7 +60,19 @@ class MainActivity : AppCompatActivity() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe{items ->
                 with(repoAdapter){
-                    this!!.setData(items)
+                    val repoInfos = mutableListOf<SearchRepoInfo>()
+                    items.map {
+                        repoInfos.add(
+                            SearchRepoInfo(
+                                name = it.name,
+                                full_name = it.fullName,
+                                language = it.language,
+                                stargazers_count = it.stars,
+                                ownerData = it.owner
+                            )
+                        )
+                    }
+                    this!!.setData(repoInfos)
                     notifyDataSetChanged()
 
                     rvMain.adapter = this

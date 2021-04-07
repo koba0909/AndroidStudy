@@ -106,7 +106,7 @@ class SearchActivity : AppCompatActivity() {
                     repoAdapter!!.setData(repoList!!)
                     repoAdapter!!.setListener(object : ItemClickListener{
                         override fun onItemCLick(repoInfo: SearchRepoInfo) {
-                            searchRepoDao!!.add(repoInfo)
+//                            searchRepoDao!!.add(repoInfo)
 
                             val intent = Intent(this@SearchActivity, SearchRepoDetailActivity::class.java)
                             startActivity(intent)
@@ -134,7 +134,7 @@ class SearchActivity : AppCompatActivity() {
                     this!!.setData(response.items)
                     setListener(object : ItemClickListener{
                         override fun onItemCLick(repoInfo: SearchRepoInfo) {
-                            searchRepoDao!!.add(repoInfo)
+//                            searchRepoDao!!.add(repoInfo)
 
                             val intent = Intent(this@SearchActivity, SearchRepoDetailActivity::class.java)
                             startActivity(intent)

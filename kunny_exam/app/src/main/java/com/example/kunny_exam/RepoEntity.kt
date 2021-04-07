@@ -14,6 +14,5 @@ class RepoEntity (
     @PrimaryKey @ColumnInfo(name = "full_name") val fullName: String,
     @SerializedName("language") val language: String?,
     @SerializedName("stargazers_count") val stars: Int,
-    @SerializedName("owner")
-    @Embedded val owner: OwnerData
+    @Embedded val owner: OwnerData?
 )
