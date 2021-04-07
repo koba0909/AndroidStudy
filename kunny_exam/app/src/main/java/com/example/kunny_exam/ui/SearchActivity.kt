@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.kunny_exam.*
 import com.example.kunny_exam.data.SearchRepoData
 import com.example.kunny_exam.data.SearchRepoInfo
+import com.example.kunny_exam.data.toRepoEntity
 import com.example.kunny_exam.network.NetworkHelper
 import com.example.kunny_exam.network.RetrofitService
 import io.reactivex.Observable
@@ -48,7 +49,7 @@ class SearchActivity : AppCompatActivity() {
         rvSearch = findViewById(R.id.rv_search)
 
         retrofitService = NetworkHelper(this).getRetrofitService()
-        repoAdapter = SearchRepoAdapter(this)
+        repoAdapter = SearchRepoAdapter()
 
         searchRoomDB = SearchRoomDB.getInstance(this)
         searchRepoDao = searchRoomDB!!.getRepoDao()
@@ -106,7 +107,7 @@ class SearchActivity : AppCompatActivity() {
                     repoAdapter!!.setData(repoList!!)
                     repoAdapter!!.setListener(object : ItemClickListener{
                         override fun onItemCLick(repoInfo: SearchRepoInfo) {
-//                            searchRepoDao!!.add(repoInfo)
+                            searchRepoDao?.add(repoInfo.toRepoEntity())
 
                             val intent = Intent(this@SearchActivity, SearchRepoDetailActivity::class.java)
                             startActivity(intent)
@@ -134,7 +135,7 @@ class SearchActivity : AppCompatActivity() {
                     this!!.setData(response.items)
                     setListener(object : ItemClickListener{
                         override fun onItemCLick(repoInfo: SearchRepoInfo) {
-//                            searchRepoDao!!.add(repoInfo)
+                            searchRepoDao?.add(repoInfo.toRepoEntity())
 
                             val intent = Intent(this@SearchActivity, SearchRepoDetailActivity::class.java)
                             startActivity(intent)

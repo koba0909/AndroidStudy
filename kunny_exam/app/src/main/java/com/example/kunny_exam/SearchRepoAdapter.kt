@@ -9,7 +9,7 @@ import com.example.kunny_exam.Common.ImageViewUtils
 import com.example.kunny_exam.data.SearchRepoInfo
 import com.example.kunny_exam.databinding.LayoutSearchItemBinding
 
-class SearchRepoAdapter(private val context: Context) : RecyclerView.Adapter<SearchRepoAdapter.SearchRepoViewHolder>() {
+class SearchRepoAdapter() : RecyclerView.Adapter<SearchRepoAdapter.SearchRepoViewHolder>() {
     private var items: List<SearchRepoInfo>? =  null
     private var listener : ItemClickListener? = null
 

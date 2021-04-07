@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var searchRepoDao : SearchRepoDao
 
     var dbRepoList : List<SearchRepoInfo>? = null
-    var repoAdapter : SearchRepoAdapter? = null
+    val repoAdapter by lazy { SearchRepoAdapter() }
 
     private val compositeDisposable : CompositeDisposable = CompositeDisposable()
 
@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity() {
         searchRepoDao = searchRoomDB.getRepoDao()
 
         dbRepoList = ArrayList()
-        repoAdapter = SearchRepoAdapter(this)
 
         floatingActionButton = findViewById(R.id.fab_main)
         rvMain = findViewById(R.id.rv_main)
@@ -60,21 +59,11 @@ class MainActivity : AppCompatActivity() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe{items ->
                 with(repoAdapter){
-                    val repoInfos = mutableListOf<SearchRepoInfo>()
-                    items.map {
-                        repoInfos.add(
-                            SearchRepoInfo(
-                                name = it.name,
-                                full_name = it.fullName,
-                                language = it.language,
-                                stargazers_count = it.stars,
-                                ownerData = it.owner
-                            )
-                        )
+                    val repoInfos = mutableListOf<SearchRepoInfo>().also {
+                        it.addAll(items.map { entity -> entity.toSearchRepoInfo() })
                     }
-                    this!!.setData(repoInfos)
+                    setData(repoInfos)
                     notifyDataSetChanged()
-
                     rvMain.adapter = this
                 }
 
