@@ -4,14 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.ProgressBar
-import android.widget.TextView
 import com.androidhuman.example.simplegithub.R
 import com.androidhuman.example.simplegithub.api.GithubApi
 import com.androidhuman.example.simplegithub.api.model.GithubRepo
@@ -25,9 +22,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class SearchActivity : AppCompatActivity(), ItemClickListener {
-    internal lateinit var rvList: RecyclerView
-    internal lateinit var progress: ProgressBar
-    internal lateinit var tvMessage: TextView
+    private lateinit var binding: ActivitySearchBinding
     internal lateinit var menuSearch: MenuItem
     internal lateinit var searchView: SearchView
     internal val adapter: SearchAdapter by lazy {
@@ -40,12 +35,10 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
-        rvList = findViewById(R.id.rvActivitySearchList)
-        progress = findViewById(R.id.pbActivitySearch)
-        tvMessage = findViewById(R.id.tvActivitySearchMessage)
+        binding = ActivitySearchBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        with(rvList) {
+        with(binding.rvActivitySearchList) {
             layoutManager = LinearLayoutManager(this@SearchActivity)
             adapter = this@SearchActivity.adapter
         }
@@ -59,7 +52,7 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_activity_search, menu)
         menuSearch = menu.findItem(R.id.menu_activity_search_query)
-        searchView = (menuSearch.getActionView() as SearchView).apply {
+        searchView = (menuSearch.actionView as SearchView).apply {
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 // 검색어 입력 후 검색을 눌렀을때 콜백
                 override fun onQueryTextSubmit(query: String): Boolean {
@@ -165,22 +158,22 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
     }
 
     private fun showProgress() {
-        progress.visibility = View.VISIBLE
+        binding.pbActivitySearch.visibility = View.VISIBLE
     }
 
     private fun hideProgress() {
-        progress.visibility = View.GONE
+        binding.pbActivitySearch.visibility = View.GONE
     }
 
     private fun showError(message: String?) {
-        with(tvMessage) {
+        with(binding.tvActivitySearchMessage) {
             text = message ?: "Unexpected error."
             visibility = View.VISIBLE
         }
     }
 
     private fun hideError() {
-        with(tvMessage) {
+        with(binding.tvActivitySearchMessage) {
             text = ""
             visibility = View.GONE
         }
