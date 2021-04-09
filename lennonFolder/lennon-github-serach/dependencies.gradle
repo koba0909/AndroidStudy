@@ -1,20 +1,21 @@
 ext {
     // Build configuration
-    buildToolsVersion = '27.0.2'
+    buildToolsVersion = '28.0.0'
+    /**컴파일 sdk 버전
+     새로 추가한 라이브러리가 최신버전일 경우
+     컴파일 sdk 버전을 올려줘야할 경우가 생김
+     */
+    compileSdkVersion = 28
     minSdkVersion = 15
-    compileSdkVersion = 27
     targetSdkVersion = 27
 
-    // Gradle plugin
-    androidPluginVersion = '3.0.1'
-
     // Kotlin
-    kotlinVersion = '1.1.60'
+    kotlinVersion = '1.4.21'
 
     // Library
     glideVersion = '4.1.1'
     gsonVersion = '2.7'
     okHttpVersion = '3.8.1'
     retrofitVersion = '2.3.0'
-    supportLibVersion = '27.0.2'
+    supportLibVersion = '28.0.0'
 }

@@ -121,8 +121,9 @@ class SignInActivity : AppCompatActivity() {
 
     private fun launchMainActivity() {
         startActivity(Intent(
-                this@SignInActivity, MainActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                this@SignInActivity, MainActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
     }
 }

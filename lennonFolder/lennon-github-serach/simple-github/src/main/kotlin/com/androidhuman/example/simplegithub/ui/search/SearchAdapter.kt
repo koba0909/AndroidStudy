@@ -5,11 +5,13 @@ import android.graphics.drawable.ColorDrawable
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.androidhuman.example.simplegithub.R
 import com.androidhuman.example.simplegithub.api.model.GithubRepo
+import com.androidhuman.example.simplegithub.databinding.ItemRepositoryBinding
 import com.androidhuman.example.simplegithub.ui.GlideApp
 import java.util.*
 
@@ -20,9 +22,15 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
     private var items: MutableList<GithubRepo> = mutableListOf()
     private val placeholder = ColorDrawable(Color.GRAY)
     private var listener: ItemClickListener? = null
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryHolder =
-            RepositoryHolder(parent)
 
+    // 뷰 바인딩을 사용하면 깔삼하게 뷰홀더는 심플
+    class RepositoryHolder(val binding: ItemRepositoryBinding) : RecyclerView.ViewHolder(binding.root)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryHolder {
+        // 뷰 바인딩 사용
+        val binding = ItemRepositoryBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        return RepositoryHolder(binding)
+    }
 
     override fun onBindViewHolder(holder: RepositoryHolder, position: Int) {
         items[position].let { repo ->
@@ -30,10 +38,10 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
                 GlideApp.with(context)
                         .load(repo.owner.avatarUrl)
                         .placeholder(placeholder)
-                        .into(holder.ivProfile)
+                        .into(holder.binding.ivItemRepositoryProfile)
 
-                holder.tvName.text = repo.fullName
-                holder.tvLanguage.text = if (TextUtils.isEmpty(repo.language))
+                holder.binding.tvItemRepositoryName.text = repo.fullName
+                holder.binding.tvItemRepositoryLanguage.text = if (TextUtils.isEmpty(repo.language))
                     context.getText(R.string.no_language_specified)
                 else
                     repo.language
@@ -61,19 +69,6 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
 
     fun clearItems() {
         items.clear()
-    }
-
-    class RepositoryHolder(parent: ViewGroup) : RecyclerView.ViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_repository, parent, false)) {
-        var ivProfile: ImageView
-        var tvName: TextView
-        var tvLanguage: TextView
-
-        init {
-            ivProfile = itemView.findViewById(R.id.ivItemRepositoryProfile)
-            tvName = itemView.findViewById(R.id.tvItemRepositoryName)
-            tvLanguage = itemView.findViewById(R.id.tvItemRepositoryLanguage)
-        }
     }
 
     interface ItemClickListener {
