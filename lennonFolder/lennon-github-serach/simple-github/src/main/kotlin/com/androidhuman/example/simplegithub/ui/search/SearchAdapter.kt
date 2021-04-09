@@ -5,15 +5,11 @@ import android.graphics.drawable.ColorDrawable
 import android.support.v7.widget.RecyclerView
 import android.text.TextUtils
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import com.androidhuman.example.simplegithub.R
 import com.androidhuman.example.simplegithub.api.model.GithubRepo
 import com.androidhuman.example.simplegithub.databinding.ItemRepositoryBinding
 import com.androidhuman.example.simplegithub.ui.GlideApp
-import java.util.*
 
 /**
  * p.245 코틀린 익스텐션은 구글이 버리는것 같아서 적용하지 않았음. 대신 뷰 바인딩을 씁시다.
@@ -28,7 +24,7 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryHolder {
         // 뷰 바인딩 사용
-        val binding = ItemRepositoryBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        val binding = ItemRepositoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return RepositoryHolder(binding)
     }
 

@@ -17,6 +17,7 @@ import com.androidhuman.example.simplegithub.api.GithubApi
 import com.androidhuman.example.simplegithub.api.model.GithubRepo
 import com.androidhuman.example.simplegithub.api.model.RepoSearchResponse
 import com.androidhuman.example.simplegithub.api.provideGithubApi
+import com.androidhuman.example.simplegithub.databinding.ActivitySearchBinding
 import com.androidhuman.example.simplegithub.ui.repo.RepositoryActivity
 import com.androidhuman.example.simplegithub.ui.search.SearchAdapter.ItemClickListener
 import retrofit2.Call
@@ -34,7 +35,7 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
             setItemClickListener(this@SearchActivity)
         }
     }
-    internal val api: GithubApi by lazy { provideGithubApi(this)}
+    internal val api: GithubApi by lazy { provideGithubApi(this) }
     internal var searchCall: Call<RepoSearchResponse>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,7 +83,7 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
                 }
 
                 override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
-                    if (""==searchView.query) {
+                    if ("" == searchView.query) {
                         finish()
                     }
                     return true
@@ -121,10 +122,10 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
                 val searchResult = response.body()
                 if (response.isSuccessful && null != searchResult) {
                     // 검색 결과를 어댑터의 데이터에 갱신
-                        with(adapter) {
-                            setItems(searchResult.items)
-                            notifyDataSetChanged()
-                        }
+                    with(adapter) {
+                        setItems(searchResult.items)
+                        notifyDataSetChanged()
+                    }
                     if (0 == searchResult.totalCount) {
                         showError(getString(R.string.no_search_result))
                     }
@@ -141,13 +142,13 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
     }
 
     private fun updateTitle(query: String) {
-        supportActionBar?.run{
+        supportActionBar?.run {
             subtitle = query
         }
     }
 
     private fun hideSoftKeyboard() {
-        (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).run{
+        (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).run {
             hideSoftInputFromWindow(searchView.windowToken, 0)
         }
     }

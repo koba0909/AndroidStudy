@@ -6,15 +6,11 @@ import android.os.Bundle
 import android.support.customtabs.CustomTabsIntent
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.Button
-import android.widget.ProgressBar
 import android.widget.Toast
 import com.androidhuman.example.simplegithub.BuildConfig
-import com.androidhuman.example.simplegithub.R
 import com.androidhuman.example.simplegithub.api.model.GithubAccessToken
 import com.androidhuman.example.simplegithub.api.provideAuthApi
 import com.androidhuman.example.simplegithub.data.AuthTokenProvider
-import com.androidhuman.example.simplegithub.databinding.ActivityRepositoryBinding
 import com.androidhuman.example.simplegithub.databinding.ActivitySignInBinding
 import com.androidhuman.example.simplegithub.ui.main.MainActivity
 import retrofit2.Call
@@ -26,7 +22,7 @@ import retrofit2.Response
  */
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
-    
+
     internal var accessTokenCall: Call<GithubAccessToken>? = null
 
     // 사용자 인증 토큰이 있는지 여부 확인
@@ -35,7 +31,8 @@ class SignInActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sign_in)
+        binding = ActivitySignInBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         binding.btnActivitySignInStart.setOnClickListener(View.OnClickListener {
             val authUri = Uri.Builder().scheme("https").authority("github.com")
                     .appendPath("login")
@@ -60,7 +57,7 @@ class SignInActivity : AppCompatActivity() {
         super.onStop()
         // 액티비티가 화면에서 사라지는 시점에 api 호출 객체가 생성되어 있다면 api 요청 취소
         // (?.는 null이 아니면 아래의 run 실행, null이면 null 반환)
-        accessTokenCall?.run{ cancel() }
+        accessTokenCall?.run { cancel() }
     }
 
     override fun onNewIntent(intent: Intent) {
