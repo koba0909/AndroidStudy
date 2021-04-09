@@ -11,6 +11,7 @@ import com.androidhuman.example.simplegithub.R
 import com.androidhuman.example.simplegithub.api.GithubApi
 import com.androidhuman.example.simplegithub.api.model.GithubRepo
 import com.androidhuman.example.simplegithub.api.provideGithubApi
+import com.androidhuman.example.simplegithub.databinding.ActivityRepositoryBinding
 import com.androidhuman.example.simplegithub.ui.GlideApp
 import retrofit2.Call
 import retrofit2.Callback
@@ -20,15 +21,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class RepositoryActivity : AppCompatActivity() {
-    internal lateinit var llContent: LinearLayout
-    internal lateinit var ivProfile: ImageView
-    internal lateinit var tvName: TextView
-    internal lateinit var tvStars: TextView
-    internal lateinit var tvDescription: TextView
-    internal lateinit var tvLanguage: TextView
-    internal lateinit var tvLastUpdate: TextView
-    internal lateinit var pbProgress: ProgressBar
-    internal lateinit var tvMessage: TextView
+    private lateinit var binding:ActivityRepositoryBinding
+
     internal val api: GithubApi by lazy { provideGithubApi((this)) }
     internal var repoCall: Call<GithubRepo>? = null
     val dateFormatInResponse = SimpleDateFormat(
@@ -38,16 +32,8 @@ class RepositoryActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_repository)
-        llContent = findViewById(R.id.llActivityRepositoryContent)
-        ivProfile = findViewById(R.id.ivActivityRepositoryProfile)
-        tvName = findViewById(R.id.tvActivityRepositoryName)
-        tvStars = findViewById(R.id.tvActivityRepositoryStars)
-        tvDescription = findViewById(R.id.tvActivityRepositoryDescription)
-        tvLanguage = findViewById(R.id.tvActivityRepositoryLanguage)
-        tvLastUpdate = findViewById(R.id.tvActivityRepositoryLastUpdate)
-        pbProgress = findViewById(R.id.pbActivityRepository)
-        tvMessage = findViewById(R.id.tvActivityRepositoryMessage)
+        binding = ActivityRepositoryBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         val login = intent.getStringExtra(KEY_USER_LOGIN)
                 ?: throw IllegalArgumentException("No login info exists in extras")
         val repo = intent.getStringExtra(KEY_REPO_NAME)
@@ -70,25 +56,25 @@ class RepositoryActivity : AppCompatActivity() {
                 if (response.isSuccessful && null != repo) {
                     GlideApp.with(this@RepositoryActivity)
                             .load(repo.owner.avatarUrl)
-                            .into(ivProfile)
-                    tvName.text = repo.fullName
-                    tvStars.text = resources
+                            .into(binding.ivActivityRepositoryProfile)
+                    binding.tvActivityRepositoryName.text = repo.fullName
+                    binding.tvActivityRepositoryStars.text = resources
                             .getQuantityString(R.plurals.star, repo.stars, repo.stars)
                     if (null == repo.description) {
-                        tvDescription.setText(R.string.no_description_provided)
+                        binding.tvActivityRepositoryDescription.setText(R.string.no_description_provided)
                     } else {
-                        tvDescription.text = repo.description
+                        binding.tvActivityRepositoryDescription.text = repo.description
                     }
                     if (null == repo.language) {
-                        tvLanguage.setText(R.string.no_language_specified)
+                        binding.tvActivityRepositoryLanguage.setText(R.string.no_language_specified)
                     } else {
-                        tvLanguage.text = repo.language
+                        binding.tvActivityRepositoryLanguage.text = repo.language
                     }
                     try {
                         val lastUpdate = dateFormatInResponse.parse(repo.updatedAt)
-                        tvLastUpdate.text = dateFormatToShow.format(lastUpdate)
+                        binding.tvActivityRepositoryLastUpdate.text = dateFormatToShow.format(lastUpdate)
                     } catch (e: ParseException) {
-                        tvLastUpdate.text = getString(R.string.unknown)
+                        binding.tvActivityRepositoryLastUpdate.text = getString(R.string.unknown)
                     }
                 } else {
                     showError("Not successful: " + response.message())
@@ -103,17 +89,17 @@ class RepositoryActivity : AppCompatActivity() {
     }
 
     private fun showProgress() {
-        llContent.visibility = View.GONE
-        pbProgress.visibility = View.VISIBLE
+        binding.llActivityRepositoryContent.visibility = View.GONE
+        binding.pbActivityRepository.visibility = View.VISIBLE
     }
 
     private fun hideProgress(isSucceed: Boolean) {
-        llContent.visibility = if (isSucceed) View.VISIBLE else View.GONE
-        pbProgress.visibility = View.GONE
+        binding.llActivityRepositoryContent.visibility = if (isSucceed) View.VISIBLE else View.GONE
+        binding.pbActivityRepository.visibility = View.GONE
     }
 
     private fun showError(message: String?) {
-        with(tvMessage) {
+        with(binding.tvActivityRepositoryMessage) {
             text = message ?: "Unexpected error."
             visibility = View.VISIBLE
         }

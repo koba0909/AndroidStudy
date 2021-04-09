@@ -84,7 +84,7 @@ class SignInActivity : AppCompatActivity() {
 
         // 비동기 방식으로 엑세스 토큰 요청
         // 앞에서 api 호출에 필요한 객체를 받았으므로 null일리 없다!
-        accessTokenCall!!.enqueue(object : Callback<GithubAccessToken?> {
+        accessTokenCall?.enqueue(object : Callback<GithubAccessToken?> {
             override fun onResponse(call: Call<GithubAccessToken?>,
                                     response: Response<GithubAccessToken?>) {
                 hideProgress()
