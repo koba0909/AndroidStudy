@@ -14,6 +14,8 @@ import com.androidhuman.example.simplegithub.R
 import com.androidhuman.example.simplegithub.api.model.GithubAccessToken
 import com.androidhuman.example.simplegithub.api.provideAuthApi
 import com.androidhuman.example.simplegithub.data.AuthTokenProvider
+import com.androidhuman.example.simplegithub.databinding.ActivityRepositoryBinding
+import com.androidhuman.example.simplegithub.databinding.ActivitySignInBinding
 import com.androidhuman.example.simplegithub.ui.main.MainActivity
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,8 +25,8 @@ import retrofit2.Response
  * p.240~244 코틀린 익스텐션은 구글이 버리는것 같아서 적용하지 않았음. 대신 뷰 바인딩을 씁시다.
  */
 class SignInActivity : AppCompatActivity() {
-    internal lateinit var btnStart: Button
-    internal lateinit var progress: ProgressBar
+    private lateinit var binding: ActivitySignInBinding
+    
     internal var accessTokenCall: Call<GithubAccessToken>? = null
 
     // 사용자 인증 토큰이 있는지 여부 확인
@@ -34,9 +36,7 @@ class SignInActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
-        btnStart = findViewById(R.id.btnActivitySignInStart)
-        progress = findViewById(R.id.pbActivitySignIn)
-        btnStart.setOnClickListener(View.OnClickListener {
+        binding.btnActivitySignInStart.setOnClickListener(View.OnClickListener {
             val authUri = Uri.Builder().scheme("https").authority("github.com")
                     .appendPath("login")
                     .appendPath("oauth")
@@ -106,13 +106,13 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun showProgress() {
-        btnStart.visibility = View.GONE
-        progress.visibility = View.VISIBLE
+        binding.btnActivitySignInStart.visibility = View.GONE
+        binding.pbActivitySignIn.visibility = View.VISIBLE
     }
 
     private fun hideProgress() {
-        btnStart.visibility = View.VISIBLE
-        progress.visibility = View.GONE
+        binding.btnActivitySignInStart.visibility = View.VISIBLE
+        binding.pbActivitySignIn.visibility = View.GONE
     }
 
     private fun showError(throwable: Throwable) {
