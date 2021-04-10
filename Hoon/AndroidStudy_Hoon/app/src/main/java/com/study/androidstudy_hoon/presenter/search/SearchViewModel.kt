@@ -1,11 +1,8 @@
 package com.study.androidstudy_hoon.presenter.search
 
 import android.util.Log
-import android.view.View
-import android.widget.ProgressBar
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.RecyclerView
 import com.study.androidstudy_hoon.data.dto.Repo
 import com.study.androidstudy_hoon.domain.base.BaseViewModel
 import com.study.androidstudy_hoon.domain.usecase.SearchRepoUseCase
@@ -21,20 +18,17 @@ class SearchViewModel(private val searchRepoUseCase: SearchRepoUseCase) : BaseVi
     val isLoading: LiveData<Boolean>
         get() = _isLoading
 
-
     fun fetchRepoSearch(query: String?) {
         addDisposable(searchRepoUseCase.getSearchResult(query?: "")
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe { _isLoading.value = true }
+                .doOnTerminate { _isLoading.value = false }
                 .subscribe({
                     _searchRepoList.value = it
                 }, {
                    Log.e("Error","$it")
                 })
         )
-    }
-
-    fun showProgress(isLoading: Boolean) {
-        _isLoading.value = isLoading
     }
 
 }

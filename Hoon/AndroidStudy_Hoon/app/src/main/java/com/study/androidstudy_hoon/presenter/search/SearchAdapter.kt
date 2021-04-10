@@ -2,22 +2,12 @@ package com.study.androidstudy_hoon.presenter.search
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import com.study.androidstudy_hoon.data.dto.Repo
 import com.study.androidstudy_hoon.databinding.SearchResultItemBinding
 
-class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
-
-    private val _searchRepoList = arrayListOf<Repo>()
-    var searchRepoList: List<Repo>
-        get() = _searchRepoList
-        set(value) {
-            _searchRepoList.clear()
-            _searchRepoList.addAll(value)
-            notifyDataSetChanged()
-        }
-
+class SearchAdapter : ListAdapter<Repo, SearchViewHolder>(REPO_COMPARATOR) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
         val binding = SearchResultItemBinding.inflate(
             LayoutInflater.from(parent.context),
@@ -27,20 +17,14 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.SearchViewHolder>() {
         return SearchViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) = holder.bind(_searchRepoList[position])
+    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) = holder.bind(getItem(position))
 
-    override fun getItemCount(): Int = _searchRepoList.size
+    companion object {
+        private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<Repo>() {
+            override fun areItemsTheSame(oldItem: Repo, newItem: Repo): Boolean = oldItem.fullName == newItem.fullName
 
-    inner class SearchViewHolder(private val binding: SearchResultItemBinding): RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(data: Repo) {
-            with(binding) {
-                repoLanguageTextView.text = data.language
-                repoNameTextView.text = data.name
-                Glide.with(binding.root.context)
-                        .load(data.owner.avatarUrl)
-                        .into(repoThumbnailImgView)
-            }
+            override fun areContentsTheSame(oldItem: Repo, newItem: Repo): Boolean = oldItem == newItem
         }
     }
+
 }
