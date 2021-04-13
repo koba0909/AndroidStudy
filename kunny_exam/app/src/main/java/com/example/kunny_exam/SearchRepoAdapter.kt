@@ -32,6 +32,7 @@ class SearchRepoAdapter() : RecyclerView.Adapter<SearchRepoAdapter.SearchRepoVie
 
     fun setListener(l : ItemClickListener) {
         this.listener = l
+        //test
     }
 
     inner class SearchRepoViewHolder(val viewBinding: LayoutSearchItemBinding) : RecyclerView.ViewHolder(viewBinding.root)
