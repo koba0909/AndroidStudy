@@ -1,4 +1,4 @@
-package com.example.kunny_exam.Common
+package com.example.kunny_exam.common
 
 object Constants {
     object DB{

@@ -1,4 +1,4 @@
-package com.example.kunny_exam.Common
+package com.example.kunny_exam.common
 
 import android.text.TextUtils
 import android.widget.ImageView

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.kunny_exam.Common.Constants
+import com.example.kunny_exam.common.Constants
 
 @Database(entities = [RepoEntity::class], version = 1)
 abstract class SearchRoomDB : RoomDatabase() {
