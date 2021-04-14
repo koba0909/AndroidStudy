@@ -55,7 +55,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         val disposable : Disposable
-        disposable = searchRepoDao.getAllRepo().subscribeOn(Schedulers.io())
+        disposable = searchRepoDao.getAllRepo()
+            .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe{items ->
                 with(repoAdapter){

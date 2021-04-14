@@ -15,7 +15,7 @@ fun SearchRepoInfo.toRepoEntity() =
         RepoEntity(
                 name = name ?: "",
                 fullName = full_name ?: "",
-                language = language,
+                language = language ?: "No language Specified",
                 stars = stargazers_count ?: 0,
                 owner = ownerData
         )

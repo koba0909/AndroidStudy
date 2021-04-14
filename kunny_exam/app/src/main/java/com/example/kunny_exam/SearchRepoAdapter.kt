@@ -9,40 +9,47 @@ import com.example.kunny_exam.databinding.LayoutSearchItemBinding
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
-
-
-
 class SearchRepoAdapter : RecyclerView.Adapter<SearchRepoAdapter.SearchRepoViewHolder>() {
-    private var items: List<SearchRepoInfo>? =  null
-    private var listener : ItemClickListener? = null
+    private lateinit var items: List<SearchRepoInfo>
     private var onItemClickSubject : PublishSubject<SearchRepoInfo> = PublishSubject.create()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchRepoViewHolder {
         val binding = LayoutSearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
 
-        return SearchRepoViewHolder(binding)
+        return SearchRepoViewHolder(binding, this)
     }
 
     fun getOnItemClickObservable() : Observable<SearchRepoInfo>{
         return onItemClickSubject
     }
 
-    override fun getItemCount(): Int = items!!.size
+    override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(holder: SearchRepoViewHolder, position: Int) {
-        holder.viewBinding.tvSearchFullName.text = items!![position].full_name ?: "no_name"
-        holder.viewBinding.tvSearchLanguage.text = items!![position].language ?: "No Language Specified"
-        ImageViewUtils.setGlideImage(holder.viewBinding.ivSearchAvatar, items!![position].ownerData!!.avatar_url)
-        holder.viewBinding.root.setOnClickListener { onItemClickSubject.onNext(items!![position]) }
+        holder.bindView(items[position])
     }
 
     fun setData(items : List<SearchRepoInfo>){
         this.items = items
     }
 
-    fun setListener(l : ItemClickListener) {
-        this.listener = l
-    }
+    class SearchRepoViewHolder(private val viewBinding: LayoutSearchItemBinding,
+    private val adapter : SearchRepoAdapter) :
+        RecyclerView.ViewHolder(viewBinding.root){
+        init {
+            with(viewBinding){
+                with(adapter){
+                    root.setOnClickListener { onItemClickSubject.onNext(items[adapterPosition]) }
+                }
+            }
+        }
 
-    class SearchRepoViewHolder(val viewBinding: LayoutSearchItemBinding) : RecyclerView.ViewHolder(viewBinding.root)
+        fun bindView(item : SearchRepoInfo){
+            with(viewBinding){
+                tvSearchFullName.text = item.full_name ?: "no_name"
+                tvSearchLanguage.text = item.language ?: "No Language Specified"
+                ImageViewUtils.setGlideImage(ivSearchAvatar, item.ownerData!!.avatar_url)
+            }
+        }
+    }
 }

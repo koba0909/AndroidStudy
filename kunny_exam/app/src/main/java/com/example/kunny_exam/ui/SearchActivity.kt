@@ -25,6 +25,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Response
+import java.lang.Exception
 
 class SearchActivity : AppCompatActivity() {
     private val TAG = SearchActivity::class.java.name
@@ -53,8 +54,6 @@ class SearchActivity : AppCompatActivity() {
 
         searchRoomDB = SearchRoomDB.getInstance(this)
         searchRepoDao = searchRoomDB!!.getRepoDao()
-
-        rvSearch.layoutManager = LinearLayoutManager(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -64,11 +63,14 @@ class SearchActivity : AppCompatActivity() {
         menuSearch = menu.findItem(R.id.menu_search_icon)
         svSearch = menuSearch.actionView as SearchView
 
-        val observable : Observable<SearchRepoData>? = null
-
         svSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String): Boolean {
-                getRepoList(query)
+                try{
+                    getRepoListObservable(query)
+
+                }catch (e : Exception){
+                    e.stackTrace
+                }
 
                 return true
             }
@@ -87,7 +89,7 @@ class SearchActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.menu_search_icon ->{
 //                getRepoList(svSearch.query as String)
-                getRepoListObservable(svSearch.query as String)
+//                getRepoListObservable(svSearch.query as String)
                 true
             }
             else -> super.onContextItemSelected(item)
@@ -105,16 +107,7 @@ class SearchActivity : AppCompatActivity() {
 
                     repoList = repoData!!.items
                     repoAdapter!!.setData(repoList!!)
-//                    repoAdapter!!.setListener(object : ItemClickListener{
-//                        override fun onItemCLick(repoInfo: SearchRepoInfo) {
-//                            searchRepoDao?.add(repoInfo.toRepoEntity())
-//
-//                            val intent = Intent(this@SearchActivity, SearchRepoDetailActivity::class.java)
-//                            startActivity(intent)
-//                        }
-//                   })
                     compositeDisposable.add(repoAdapter!!.getOnItemClickObservable().subscribe {item ->
-//                        searchRepoDao?.add(item.toRepoEntity())
                         val intent = Intent(this@SearchActivity, SearchRepoDetailActivity::class.java)
 
                         startActivity(intent)
@@ -132,21 +125,25 @@ class SearchActivity : AppCompatActivity() {
         })
     }
 
-    fun getRepoListObservable(keyword : String){
+    private fun getRepoListObservable(keyword : String){
         val disposable = retrofitService!!.getSearchRepoObservable(keyword)
-                .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { response ->
-                    with(repoAdapter){
+                        with(repoAdapter){
                         this!!.setData(response.items)
-                        setListener(object : ItemClickListener{
-                            override fun onItemCLick(repoInfo: SearchRepoInfo) {
-                                searchRepoDao?.add(repoInfo.toRepoEntity())
+                        compositeDisposable.add(
+                            repoAdapter!!.getOnItemClickObservable()
 
-                                val intent = Intent(this@SearchActivity, SearchRepoDetailActivity::class.java)
-                                startActivity(intent)
-                            }
-                        })
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(Schedulers.newThread())
+                                .subscribe { item ->
+                                    searchRepoDao?.add(item.toRepoEntity())
+
+                                    val intent = Intent(this@SearchActivity,
+                                        SearchRepoDetailActivity::class.java)
+                                    startActivity(intent)
+                                })
                         notifyDataSetChanged()
                         rvSearch.adapter = this
                     }
