@@ -31,8 +31,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var searchRoomDB : SearchRoomDB
     lateinit var searchRepoDao : SearchRepoDao
 
-    var dbRepoList : List<SearchRepoInfo>? = null
-    val repoAdapter by lazy { SearchRepoAdapter() }
+    private lateinit var dbRepoList : List<SearchRepoInfo>
+    private val repoAdapter by lazy { SearchRepoAdapter(this) }
 
     private val compositeDisposable : CompositeDisposable = CompositeDisposable()
 

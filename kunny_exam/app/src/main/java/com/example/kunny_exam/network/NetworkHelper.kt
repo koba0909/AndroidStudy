@@ -7,19 +7,19 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 class NetworkHelper(private val context : Context) {
-    val BASE_URL = "https://api.github.com/"
+    private val BASE_URL = "https://api.github.com/"
 
-    var retrofit: Retrofit? = null
+    private lateinit var retrofit: Retrofit
 
-    private var apiService: RetrofitService? = null
+    private lateinit var apiService: RetrofitService
 
-    fun getRetrofitService(): RetrofitService? {
+    fun getRetrofitService(): RetrofitService {
         retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL) //api의 baseURL
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
-        apiService = retrofit!!.create(RetrofitService::class.java)
+        apiService = retrofit.create(RetrofitService::class.java)
         return apiService
     }
 }

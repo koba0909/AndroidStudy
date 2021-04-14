@@ -1,7 +1,9 @@
 package com.example.kunny_exam
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kunny_exam.common.ImageViewUtils
 import com.example.kunny_exam.data.SearchRepoInfo
@@ -9,9 +11,9 @@ import com.example.kunny_exam.databinding.LayoutSearchItemBinding
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 
-class SearchRepoAdapter : RecyclerView.Adapter<SearchRepoAdapter.SearchRepoViewHolder>() {
+class SearchRepoAdapter(private val mContext : Context) : RecyclerView.Adapter<SearchRepoAdapter.SearchRepoViewHolder>() {
     private lateinit var items: List<SearchRepoInfo>
-    private var onItemClickSubject : PublishSubject<SearchRepoInfo> = PublishSubject.create()
+    private val onItemClickSubject : PublishSubject<SearchRepoInfo> = PublishSubject.create()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchRepoViewHolder {
         val binding = LayoutSearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -46,8 +48,8 @@ class SearchRepoAdapter : RecyclerView.Adapter<SearchRepoAdapter.SearchRepoViewH
 
         fun bindView(item : SearchRepoInfo){
             with(viewBinding){
-                tvSearchFullName.text = item.full_name ?: "no_name"
-                tvSearchLanguage.text = item.language ?: "No Language Specified"
+                tvSearchFullName.text = item.full_name ?: adapter.mContext.getString(R.string.repository_no_fullname_text)
+                tvSearchLanguage.text = item.language ?: adapter.mContext.getString(R.string.repository_no_launguage_text)
                 ImageViewUtils.setGlideImage(ivSearchAvatar, item.ownerData!!.avatar_url)
             }
         }

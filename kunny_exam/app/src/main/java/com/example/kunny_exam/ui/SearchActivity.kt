@@ -30,12 +30,12 @@ import java.lang.Exception
 class SearchActivity : AppCompatActivity() {
     private val TAG = SearchActivity::class.java.name
 
-    private var retrofitService : RetrofitService? = null
+    private val retrofitService : RetrofitService by lazy { NetworkHelper(this).getRetrofitService() }
+    private val repoAdapter : SearchRepoAdapter by lazy { SearchRepoAdapter(this) }
+    private val searchRoomDB : SearchRoomDB by lazy { SearchRoomDB.getInstance(this) }
+    private val searchRepoDao : SearchRepoDao by lazy { searchRoomDB.getRepoDao() }
 
-    var repoList : List<SearchRepoInfo>? = null
-    var repoAdapter : SearchRepoAdapter? = null
-    var searchRoomDB : SearchRoomDB? = null
-    var searchRepoDao : SearchRepoDao? = null
+    private lateinit var repoList : List<SearchRepoInfo>
 
     lateinit var svSearch : SearchView
     lateinit var menuSearch : MenuItem
@@ -48,12 +48,6 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         rvSearch = findViewById(R.id.rv_search)
-
-        retrofitService = NetworkHelper(this).getRetrofitService()
-        repoAdapter = SearchRepoAdapter()
-
-        searchRoomDB = SearchRoomDB.getInstance(this)
-        searchRepoDao = searchRoomDB!!.getRepoDao()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -97,7 +91,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     fun getRepoList(keyword : String) {
-        retrofitService!!.getSearchRepo(keyword).enqueue(object : retrofit2.Callback<SearchRepoData>{
+        retrofitService.getSearchRepo(keyword).enqueue(object : retrofit2.Callback<SearchRepoData>{
             override fun onResponse(
                     call: Call<SearchRepoData>,
                     response: Response<SearchRepoData>
@@ -106,13 +100,13 @@ class SearchActivity : AppCompatActivity() {
                     val repoData = response.body()
 
                     repoList = repoData!!.items
-                    repoAdapter!!.setData(repoList!!)
-                    compositeDisposable.add(repoAdapter!!.getOnItemClickObservable().subscribe {item ->
+                    repoAdapter.setData(repoList)
+                    compositeDisposable.add(repoAdapter.getOnItemClickObservable().subscribe {item ->
                         val intent = Intent(this@SearchActivity, SearchRepoDetailActivity::class.java)
 
                         startActivity(intent)
                     })
-                    repoAdapter!!.notifyDataSetChanged()
+                    repoAdapter.notifyDataSetChanged()
                     rvSearch.adapter = repoAdapter
 
                     hideSoftKeyboard()
@@ -126,19 +120,19 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun getRepoListObservable(keyword : String){
-        val disposable = retrofitService!!.getSearchRepoObservable(keyword)
+        val disposable = retrofitService.getSearchRepoObservable(keyword)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { response ->
                         with(repoAdapter){
-                        this!!.setData(response.items)
+                        this.setData(response.items)
                         compositeDisposable.add(
-                            repoAdapter!!.getOnItemClickObservable()
+                            repoAdapter.getOnItemClickObservable()
 
                                 .subscribeOn(Schedulers.io())
                                 .observeOn(Schedulers.newThread())
                                 .subscribe { item ->
-                                    searchRepoDao?.add(item.toRepoEntity())
+                                    searchRepoDao.add(item.toRepoEntity())
 
                                     val intent = Intent(this@SearchActivity,
                                         SearchRepoDetailActivity::class.java)

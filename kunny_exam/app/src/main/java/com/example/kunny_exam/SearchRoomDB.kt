@@ -12,17 +12,15 @@ abstract class SearchRoomDB : RoomDatabase() {
 
     companion object{
 
-        private var INSTANCE : SearchRoomDB? = null
+        private lateinit var INSTANCE : SearchRoomDB
 
-        fun getInstance(context : Context) : SearchRoomDB? {
-            if(INSTANCE == null){
-                synchronized(SearchRoomDB::class){
-                    INSTANCE = Room.databaseBuilder(
-                        context.applicationContext,
-                        SearchRoomDB::class.java,
-                        Constants.DB.REPOSITORIES_ROOM_DB_NAME)
-                        .build()
-                }
+        fun getInstance(context : Context) : SearchRoomDB {
+            synchronized(SearchRoomDB::class){
+                INSTANCE = Room.databaseBuilder(
+                    context.applicationContext,
+                    SearchRoomDB::class.java,
+                    Constants.DB.REPOSITORIES_ROOM_DB_NAME)
+                    .build()
             }
             return INSTANCE
         }
