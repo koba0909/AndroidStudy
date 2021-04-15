@@ -35,8 +35,6 @@ class SearchActivity : AppCompatActivity() {
     private val searchRoomDB : SearchRoomDB by lazy { SearchRoomDB.getInstance(this) }
     private val searchRepoDao : SearchRepoDao by lazy { searchRoomDB.getRepoDao() }
 
-    private lateinit var repoList : List<SearchRepoInfo>
-
     lateinit var svSearch : SearchView
     lateinit var menuSearch : MenuItem
     lateinit var rvSearch : RecyclerView
@@ -55,13 +53,31 @@ class SearchActivity : AppCompatActivity() {
         inflater.inflate(R.menu.search_menu, menu)
 
         menuSearch = menu.findItem(R.id.menu_search_icon)
-        svSearch = menuSearch.actionView as SearchView
+        svSearch = (menuSearch.actionView as SearchView).also {
+            it.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    try{
+                        getRepoListObservable(query)
+                        hideSoftKeyboard()
+                    }catch (e : Exception){
+                        e.stackTrace
+                    }
+
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return true
+                }
+            })
+        }
+        rvSearch.adapter = repoAdapter
 
         svSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String): Boolean {
                 try{
                     getRepoListObservable(query)
-
+                    hideSoftKeyboard()
                 }catch (e : Exception){
                     e.stackTrace
                 }
@@ -82,41 +98,10 @@ class SearchActivity : AppCompatActivity() {
         val info = item.menuInfo as AdapterView.AdapterContextMenuInfo
         return when (item.itemId) {
             R.id.menu_search_icon ->{
-//                getRepoList(svSearch.query as String)
-//                getRepoListObservable(svSearch.query as String)
                 true
             }
             else -> super.onContextItemSelected(item)
         }
-    }
-
-    fun getRepoList(keyword : String) {
-        retrofitService.getSearchRepo(keyword).enqueue(object : retrofit2.Callback<SearchRepoData>{
-            override fun onResponse(
-                    call: Call<SearchRepoData>,
-                    response: Response<SearchRepoData>
-            ) {
-                if(response.isSuccessful){
-                    val repoData = response.body()
-
-                    repoList = repoData!!.items
-                    repoAdapter.setData(repoList)
-                    compositeDisposable.add(repoAdapter.getOnItemClickObservable().subscribe {item ->
-                        val intent = Intent(this@SearchActivity, SearchRepoDetailActivity::class.java)
-
-                        startActivity(intent)
-                    })
-                    repoAdapter.notifyDataSetChanged()
-                    rvSearch.adapter = repoAdapter
-
-                    hideSoftKeyboard()
-                }
-            }
-
-            override fun onFailure(call: Call<SearchRepoData>, t: Throwable) {
-                Log.e(TAG, t.message!!)
-            }
-        })
     }
 
     private fun getRepoListObservable(keyword : String){
@@ -138,8 +123,6 @@ class SearchActivity : AppCompatActivity() {
                                         SearchRepoDetailActivity::class.java)
                                     startActivity(intent)
                                 })
-                        notifyDataSetChanged()
-                        rvSearch.adapter = this
                     }
                 }
         compositeDisposable.add(disposable)

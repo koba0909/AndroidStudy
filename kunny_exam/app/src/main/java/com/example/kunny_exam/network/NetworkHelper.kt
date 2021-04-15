@@ -11,7 +11,7 @@ class NetworkHelper(private val context : Context) {
 
     private lateinit var retrofit: Retrofit
 
-    private lateinit var apiService: RetrofitService
+    private val apiService: RetrofitService by lazy { getRetrofitService() }
 
     fun getRetrofitService(): RetrofitService {
         retrofit = Retrofit.Builder()
@@ -19,7 +19,6 @@ class NetworkHelper(private val context : Context) {
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
-        apiService = retrofit.create(RetrofitService::class.java)
         return apiService
     }
 }

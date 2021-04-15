@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        searchRoomDB = SearchRoomDB.getInstance(this)!!
+        searchRoomDB = SearchRoomDB.getInstance(this)
         searchRepoDao = searchRoomDB.getRepoDao()
 
         dbRepoList = ArrayList()
@@ -48,6 +48,8 @@ class MainActivity : AppCompatActivity() {
         floatingActionButton = findViewById(R.id.fab_main)
         rvMain = findViewById(R.id.rv_main)
         tvMainEmpty = findViewById(R.id.tv_main_empty)
+
+        rvMain.adapter = repoAdapter
 
         floatingActionButton.setOnClickListener {
             val intent = Intent(this, SearchActivity::class.java);
@@ -64,8 +66,6 @@ class MainActivity : AppCompatActivity() {
                         it.addAll(items.map { entity -> entity.toSearchRepoInfo() })
                     }
                     setData(repoInfos)
-                    notifyDataSetChanged()
-                    rvMain.adapter = this
                 }
 
                 if(items.isEmpty()){

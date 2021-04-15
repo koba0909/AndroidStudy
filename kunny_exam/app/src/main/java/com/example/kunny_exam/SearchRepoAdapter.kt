@@ -33,6 +33,7 @@ class SearchRepoAdapter(private val mContext : Context) : RecyclerView.Adapter<S
 
     fun setData(items : List<SearchRepoInfo>){
         this.items = items
+        notifyDataSetChanged()
     }
 
     class SearchRepoViewHolder(private val viewBinding: LayoutSearchItemBinding,
