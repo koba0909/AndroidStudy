@@ -35,7 +35,7 @@ class SearchActivity : AppCompatActivity() {
     private val searchRoomDB : SearchRoomDB by lazy { SearchRoomDB.getInstance(this) }
     private val searchRepoDao : SearchRepoDao by lazy { searchRoomDB.getRepoDao() }
 
-    lateinit var svSearch : SearchView
+    private var svSearch : SearchView? = null
     lateinit var menuSearch : MenuItem
     lateinit var rvSearch : RecyclerView
 
@@ -46,6 +46,8 @@ class SearchActivity : AppCompatActivity() {
         setContentView(R.layout.activity_search)
 
         rvSearch = findViewById(R.id.rv_search)
+
+        rvSearch.adapter = repoAdapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -53,16 +55,14 @@ class SearchActivity : AppCompatActivity() {
         inflater.inflate(R.menu.search_menu, menu)
 
         menuSearch = menu.findItem(R.id.menu_search_icon)
-        svSearch = (menuSearch.actionView as SearchView).also {
-            it.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-                override fun onQueryTextSubmit(query: String): Boolean {
-                    try{
-                        getRepoListObservable(query)
-                        hideSoftKeyboard()
-                    }catch (e : Exception){
-                        e.stackTrace
-                    }
 
+        svSearch = menuSearch.actionView as? SearchView
+        if(svSearch != null){
+            svSearch!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    getRepoListObservable(query)
+                    hideSoftKeyboard()
+                    
                     return true
                 }
 
@@ -71,26 +71,6 @@ class SearchActivity : AppCompatActivity() {
                 }
             })
         }
-        rvSearch.adapter = repoAdapter
-
-        svSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(query: String): Boolean {
-                try{
-                    getRepoListObservable(query)
-                    hideSoftKeyboard()
-                }catch (e : Exception){
-                    e.stackTrace
-                }
-
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return true
-            }
-
-        })
-
         return true
     }
 
@@ -130,7 +110,7 @@ class SearchActivity : AppCompatActivity() {
 
     private fun hideSoftKeyboard() {
         (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).run {
-            hideSoftInputFromWindow(svSearch.windowToken, 0)
+            hideSoftInputFromWindow(svSearch!!.windowToken, 0)
         }
     }
 
