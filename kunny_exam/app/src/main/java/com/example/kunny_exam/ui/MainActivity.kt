@@ -3,12 +3,14 @@ package com.example.kunny_exam.ui
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.kunny_exam.*
 import com.example.kunny_exam.data.OwnerData
 import com.example.kunny_exam.data.SearchRepoInfo
+import com.example.kunny_exam.databinding.ActivityMainBinding
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Flowable
@@ -22,14 +24,9 @@ import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
-    //Widget
-    lateinit var floatingActionButton : FloatingActionButton
-    lateinit var rvMain : RecyclerView
-    lateinit var tvMainEmpty : TextView
-
     //Room DB
-    lateinit var searchRoomDB : SearchRoomDB
-    lateinit var searchRepoDao : SearchRepoDao
+    private val searchRoomDB by lazy { SearchRoomDB.getInstance(this) }
+    private val searchRepoDao by lazy { searchRoomDB.getRepoDao()}
 
     private lateinit var dbRepoList : List<SearchRepoInfo>
     private val repoAdapter by lazy { SearchRepoAdapter(this) }
@@ -38,44 +35,45 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        searchRoomDB = SearchRoomDB.getInstance(this)
-        searchRepoDao = searchRoomDB.getRepoDao()
+        val binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
 
-        dbRepoList = ArrayList()
+        init(binding)
+        showRoomList(binding)
 
-        floatingActionButton = findViewById(R.id.fab_main)
-        rvMain = findViewById(R.id.rv_main)
-        tvMainEmpty = findViewById(R.id.tv_main_empty)
+        setContentView(binding.root)
+    }
 
-        rvMain.adapter = repoAdapter
-
-        floatingActionButton.setOnClickListener {
+    private fun init(binding : ActivityMainBinding){
+        binding.fabMain.setOnClickListener {
             val intent = Intent(this, SearchActivity::class.java);
             startActivity(intent)
         }
+        binding.rvMain.adapter = repoAdapter
 
-        val disposable : Disposable
-        disposable = searchRepoDao.getAllRepo()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe{items ->
-                with(repoAdapter){
-                    val repoInfos = mutableListOf<SearchRepoInfo>().also {
-                        it.addAll(items.map { entity -> entity.toSearchRepoInfo() })
+        dbRepoList = ArrayList()
+    }
+
+    private fun showRoomList(binding : ActivityMainBinding){
+        val disposable : Disposable = searchRepoDao.getAllRepo()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe{items ->
+                    with(repoAdapter){
+                        val repoInfos = mutableListOf<SearchRepoInfo>().also {
+                            it.addAll(items.map { entity -> entity.toSearchRepoInfo() })
+                        }
+                        setData(repoInfos)
                     }
-                    setData(repoInfos)
-                }
 
-                if(items.isEmpty()){
-                    tvMainEmpty.visibility = View.VISIBLE
-                    rvMain.visibility = View.GONE
-                }else{
-                    tvMainEmpty.visibility = View.GONE
-                    rvMain.visibility = View.VISIBLE
+                    if(items.isEmpty()){
+                        binding.tvMainEmpty.visibility = View.VISIBLE
+                        binding.rvMain.visibility = View.GONE
+                    }else{
+                        binding.tvMainEmpty.visibility = View.GONE
+                        binding.rvMain.visibility = View.VISIBLE
+                    }
                 }
-            }
         compositeDisposable.add(disposable)
     }
 }
