@@ -13,6 +13,8 @@ import com.androidhuman.example.simplegithub.api.model.GithubRepo
 import com.androidhuman.example.simplegithub.api.provideGithubApi
 import com.androidhuman.example.simplegithub.databinding.ActivityRepositoryBinding
 import com.androidhuman.example.simplegithub.ui.GlideApp
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -24,7 +26,8 @@ class RepositoryActivity : AppCompatActivity() {
     private lateinit var binding:ActivityRepositoryBinding
 
     internal val api: GithubApi by lazy { provideGithubApi((this)) }
-    internal var repoCall: Call<GithubRepo>? = null
+    //internal var repoCall: Call<GithubRepo>? = null
+    internal val disposable = CompositeDisposable()
     val dateFormatInResponse = SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ssX", Locale.getDefault())
     val dateFormatToShow = SimpleDateFormat(
@@ -43,17 +46,18 @@ class RepositoryActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        repoCall?.run { cancel() }
+        //repoCall?.run { cancel() }
+        disposable.clear()
     }
 
     private fun showRepositoryInfo(login: String, repoName: String) {
-        showProgress()
-        repoCall = api.getRepository(login, repoName)
-        repoCall!!.enqueue(object : Callback<GithubRepo?> {
-            override fun onResponse(call: Call<GithubRepo?>, response: Response<GithubRepo?>) {
-                hideProgress(true)
-                val repo = response.body()
-                if (response.isSuccessful && null != repo) {
+
+        disposable.add(api.getRepository(login, repoName)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe{showProgress()}
+                .doOnError{hideProgress(false)}
+                .doOnComplete{hideProgress(true)}
+                .subscribe({ repo ->
                     GlideApp.with(this@RepositoryActivity)
                             .load(repo.owner.avatarUrl)
                             .into(binding.ivActivityRepositoryProfile)
@@ -76,16 +80,49 @@ class RepositoryActivity : AppCompatActivity() {
                     } catch (e: ParseException) {
                         binding.tvActivityRepositoryLastUpdate.text = getString(R.string.unknown)
                     }
-                } else {
-                    showError("Not successful: " + response.message())
-                }
-            }
-
-            override fun onFailure(call: Call<GithubRepo?>, t: Throwable) {
-                hideProgress(false)
-                showError(t.message)
-            }
-        })
+                }) {
+                    showError(it.message)
+                })
+//Rx 자바를 적용하기전 코드
+//        showProgress()
+//        repoCall = api.getRepository(login, repoName)
+//        repoCall!!.enqueue(object : Callback<GithubRepo?> {
+//            override fun onResponse(call: Call<GithubRepo?>, response: Response<GithubRepo?>) {
+//                hideProgress(true)
+//                val repo = response.body()
+//                if (response.isSuccessful && null != repo) {
+//                    GlideApp.with(this@RepositoryActivity)
+//                            .load(repo.owner.avatarUrl)
+//                            .into(binding.ivActivityRepositoryProfile)
+//                    binding.tvActivityRepositoryName.text = repo.fullName
+//                    binding.tvActivityRepositoryStars.text = resources
+//                            .getQuantityString(R.plurals.star, repo.stars, repo.stars)
+//                    if (null == repo.description) {
+//                        binding.tvActivityRepositoryDescription.setText(R.string.no_description_provided)
+//                    } else {
+//                        binding.tvActivityRepositoryDescription.text = repo.description
+//                    }
+//                    if (null == repo.language) {
+//                        binding.tvActivityRepositoryLanguage.setText(R.string.no_language_specified)
+//                    } else {
+//                        binding.tvActivityRepositoryLanguage.text = repo.language
+//                    }
+//                    try {
+//                        val lastUpdate = dateFormatInResponse.parse(repo.updatedAt)
+//                        binding.tvActivityRepositoryLastUpdate.text = dateFormatToShow.format(lastUpdate)
+//                    } catch (e: ParseException) {
+//                        binding.tvActivityRepositoryLastUpdate.text = getString(R.string.unknown)
+//                    }
+//                } else {
+//                    showError("Not successful: " + response.message())
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<GithubRepo?>, t: Throwable) {
+//                hideProgress(false)
+//                showError(t.message)
+//            }
+//        })
     }
 
     private fun showProgress() {

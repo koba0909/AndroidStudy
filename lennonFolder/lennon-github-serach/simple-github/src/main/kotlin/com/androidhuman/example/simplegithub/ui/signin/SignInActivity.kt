@@ -13,6 +13,8 @@ import com.androidhuman.example.simplegithub.api.provideAuthApi
 import com.androidhuman.example.simplegithub.data.AuthTokenProvider
 import com.androidhuman.example.simplegithub.databinding.ActivitySignInBinding
 import com.androidhuman.example.simplegithub.ui.main.MainActivity
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,7 +25,8 @@ import retrofit2.Response
 class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
 
-    internal var accessTokenCall: Call<GithubAccessToken>? = null
+    //internal var accessTokenCall: Call<GithubAccessToken>? = null
+    internal val disposable = CompositeDisposable()
 
     // 사용자 인증 토큰이 있는지 여부 확인
     internal val api by lazy { provideAuthApi() }
@@ -57,7 +60,9 @@ class SignInActivity : AppCompatActivity() {
         super.onStop()
         // 액티비티가 화면에서 사라지는 시점에 api 호출 객체가 생성되어 있다면 api 요청 취소
         // (?.는 null이 아니면 아래의 run 실행, null이면 null 반환)
-        accessTokenCall?.run { cancel() }
+        //accessTokenCall?.run { cancel() }
+
+        disposable.clear()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -72,34 +77,50 @@ class SignInActivity : AppCompatActivity() {
     }
 
     private fun getAccessToken(code: String) {
-        showProgress()
+        disposable.add(api.getAccessToken(
+                BuildConfig.GITHUB_CLIENT_ID, BuildConfig.GITHUB_CLIENT_SECRET,
+                code)
 
-        // 액세스 토큰을 요청하는 REST API
-        accessTokenCall = api.getAccessToken(
-                BuildConfig.GITHUB_CLIENT_ID,
-                BuildConfig.GITHUB_CLIENT_SECRET, code)
-
-        // 비동기 방식으로 엑세스 토큰 요청
-        // 앞에서 api 호출에 필요한 객체를 받았으므로 null일리 없다!
-        accessTokenCall?.enqueue(object : Callback<GithubAccessToken?> {
-            override fun onResponse(call: Call<GithubAccessToken?>,
-                                    response: Response<GithubAccessToken?>) {
-                hideProgress()
-                val token = response.body()
-                if (response.isSuccessful && null != token) {
-                    authTokenProvider.updateToken(token.accessToken)
+                .map { it.accessToken } //api를 통해 받은 응답에서 액세스 토큰만 추출
+                .observeOn(AndroidSchedulers.mainThread()) //이 이후에 실행되는 코드는 안드로이드 메인스레드에서 실행
+                .doOnSubscribe{showProgress()} // 구독할 때 수행할 작업
+                .doOnTerminate{hideProgress()} // 스트림이 종료될 때 수행할 작업
+                .subscribe({token -> // 옵저버블 구독
+                    authTokenProvider.updateToken(token)
                     launchMainActivity()
-                } else {
-                    showError(IllegalStateException(
-                            "Not successful: " + response.message()))
-                }
-            }
-
-            override fun onFailure(call: Call<GithubAccessToken?>, t: Throwable) {
-                hideProgress()
-                showError(t)
-            }
-        })
+                }, {
+                    showError(it)
+                })
+        )
+//Rx 자바를 쓰기전 코드
+//        showProgress()
+//
+//        // 액세스 토큰을 요청하는 REST API
+//        accessTokenCall = api.getAccessToken(
+//                BuildConfig.GITHUB_CLIENT_ID,
+//                BuildConfig.GITHUB_CLIENT_SECRET, code)
+//
+//        // 비동기 방식으로 엑세스 토큰 요청
+//        // 앞에서 api 호출에 필요한 객체를 받았으므로 null일리 없다!
+//        accessTokenCall?.enqueue(object : Callback<GithubAccessToken?> {
+//            override fun onResponse(call: Call<GithubAccessToken?>,
+//                                    response: Response<GithubAccessToken?>) {
+//                hideProgress()
+//                val token = response.body()
+//                if (response.isSuccessful && null != token) {
+//                    authTokenProvider.updateToken(token.accessToken)
+//                    launchMainActivity()
+//                } else {
+//                    showError(IllegalStateException(
+//                            "Not successful: " + response.message()))
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<GithubAccessToken?>, t: Throwable) {
+//                hideProgress()
+//                showError(t)
+//            }
+//        })
     }
 
     private fun showProgress() {
