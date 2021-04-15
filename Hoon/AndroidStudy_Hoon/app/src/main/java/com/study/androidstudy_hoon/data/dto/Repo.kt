@@ -1,6 +1,7 @@
 package com.study.androidstudy_hoon.data.dto
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Repo(
     @field:SerializedName("id") val id: Long,
@@ -12,4 +13,4 @@ data class Repo(
     @field:SerializedName("forks_count") val forks: Int,
     @field:SerializedName("language") val language: String?,
     @field:SerializedName("owner") val owner: Owner,
-)
+): Serializable
