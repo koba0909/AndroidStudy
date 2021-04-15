@@ -23,7 +23,6 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var viewModel: SearchViewModel
     private val searchAdapter by lazy { SearchAdapter() }
     private val compositeDisposable = CompositeDisposable()
-    private var searchView: SearchView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,11 +78,11 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_item, menu)
-        searchView = menu?.findItem(R.id.action_search)?.actionView as? SearchView
+        val searchView = menu?.findItem(R.id.action_search)?.actionView as? SearchView
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 viewModel.fetchRepoSearch(query?.trim())
-                menu?.getItem(0)?.collapseActionView()
+                menu.getItem(0)?.collapseActionView()
                 return false
             }
 
