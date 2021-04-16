@@ -2,7 +2,7 @@ package com.androidhuman.example.simplegithub.api.model
 
 import com.google.gson.annotations.SerializedName
 
-class GithubRepo(val name: String,
+data class GithubRepo(val name: String,
                  @field:SerializedName("full_name") val fullName: String,
                  val owner: GithubOwner,
                  val description: String?,

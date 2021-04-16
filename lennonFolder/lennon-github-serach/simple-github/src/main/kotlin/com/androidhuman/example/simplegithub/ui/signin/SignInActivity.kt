@@ -37,17 +37,14 @@ class SignInActivity : AppCompatActivity() {
         binding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.btnActivitySignInStart.setOnClickListener(View.OnClickListener {
-            val authUri = Uri.Builder().scheme("https").authority("github.com")
-                    .appendPath("login")
-                    .appendPath("oauth")
-                    .appendPath("authorize")
-                    .appendQueryParameter("client_id", BuildConfig.GITHUB_CLIENT_ID)
-                    .build()
+            val authUri = Uri.parse("https://github.com/login/oauth/authorize?client_id=${BuildConfig.GITHUB_CLIENT_ID}")
+
             //authUri : https://github.com/login/oauth/authorize?client_id=cd40ab31a8ad344cd4e7
 
             //웹 페이지 구현이 복잡한 커스텀 웹뷰 대신 크롬 커스텀 탭을 사용
-            val intent = CustomTabsIntent.Builder().build()
-            intent.launchUrl(this@SignInActivity, authUri)
+           CustomTabsIntent.Builder().build().run{
+                this.launchUrl(this@SignInActivity, authUri)
+            }
         })
 
         // 있으면 메인 액티비티로 이동

@@ -27,7 +27,7 @@ class RepositoryActivity : AppCompatActivity() {
 
     internal val api: GithubApi by lazy { provideGithubApi((this)) }
     //internal var repoCall: Call<GithubRepo>? = null
-    internal val disposable = CompositeDisposable()
+    private val disposable = CompositeDisposable()
     val dateFormatInResponse = SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ssX", Locale.getDefault())
     val dateFormatToShow = SimpleDateFormat(
@@ -64,12 +64,12 @@ class RepositoryActivity : AppCompatActivity() {
                     binding.tvActivityRepositoryName.text = repo.fullName
                     binding.tvActivityRepositoryStars.text = resources
                             .getQuantityString(R.plurals.star, repo.stars, repo.stars)
-                    if (null == repo.description) {
+                    if (repo.description.isNullOrBlank()) {
                         binding.tvActivityRepositoryDescription.setText(R.string.no_description_provided)
                     } else {
                         binding.tvActivityRepositoryDescription.text = repo.description
                     }
-                    if (null == repo.language) {
+                    if (repo.language.isNullOrBlank()) {
                         binding.tvActivityRepositoryLanguage.setText(R.string.no_language_specified)
                     } else {
                         binding.tvActivityRepositoryLanguage.text = repo.language

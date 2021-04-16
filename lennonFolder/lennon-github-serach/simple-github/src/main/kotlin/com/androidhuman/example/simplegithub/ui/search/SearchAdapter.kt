@@ -20,12 +20,18 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
     private var listener: ItemClickListener? = null
 
     // 뷰 바인딩을 사용하면 깔삼하게 뷰홀더는 심플
-    class RepositoryHolder(val binding: ItemRepositoryBinding) : RecyclerView.ViewHolder(binding.root)
+    class RepositoryHolder(val binding: ItemRepositoryBinding, listener: ItemClickListener?, items: List<GithubRepo>) : RecyclerView.ViewHolder(binding.root) {
+        init{
+            binding.root.setOnClickListener{
+                listener?.onItemClick(items[adapterPosition])
+            }
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryHolder {
         // 뷰 바인딩 사용
         val binding = ItemRepositoryBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return RepositoryHolder(binding)
+        return RepositoryHolder(binding, listener, items)
     }
 
     override fun onBindViewHolder(holder: RepositoryHolder, position: Int) {
@@ -41,14 +47,18 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
                     context.getText(R.string.no_language_specified)
                 else
                     repo.language
-
-                setOnClickListener {
-                    if (null != listener) {
-                        listener!!.onItemClick(repo)
-                    }
-                }
             }
         }
+    }
+
+     fun updateItem(items: List<GithubRepo>) {
+         setItems(items)
+         notifyDataSetChanged()
+     }
+
+    fun clearResults() {
+        clearItems()
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int =

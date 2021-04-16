@@ -8,7 +8,6 @@ import android.support.v7.widget.SearchView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.inputmethod.InputMethodManager
 import com.androidhuman.example.simplegithub.R
 import com.androidhuman.example.simplegithub.api.GithubApi
 import com.androidhuman.example.simplegithub.api.model.GithubRepo
@@ -16,6 +15,7 @@ import com.androidhuman.example.simplegithub.api.provideGithubApi
 import com.androidhuman.example.simplegithub.databinding.ActivitySearchBinding
 import com.androidhuman.example.simplegithub.ui.repo.RepositoryActivity
 import com.androidhuman.example.simplegithub.ui.search.SearchAdapter.ItemClickListener
+import com.androidhuman.example.simplegithub.util.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -23,17 +23,17 @@ import java.util.*
 
 class SearchActivity : AppCompatActivity(), ItemClickListener {
     private lateinit var binding: ActivitySearchBinding
-    internal lateinit var menuSearch: MenuItem
-    internal lateinit var searchView: SearchView
-    internal val adapter: SearchAdapter by lazy {
+    private lateinit var menuSearch: MenuItem
+    private lateinit var searchView: SearchView
+    private val adapter: SearchAdapter by lazy {
         SearchAdapter().apply {
             setItemClickListener(this@SearchActivity)
         }
     }
-    internal val api: GithubApi by lazy { provideGithubApi(this) }
+    private val api: GithubApi by lazy { provideGithubApi(this) }
 
     //internal var searchCall: Call<RepoSearchResponse>? = null
-    internal val disposables = CompositeDisposable()
+    private val disposables = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +60,7 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
                 // 검색어 입력 후 검색을 눌렀을때 콜백
                 override fun onQueryTextSubmit(query: String): Boolean {
                     updateTitle(query)
-                    hideSoftKeyboard()
+                    hideSoftKeyboard(this@SearchActivity, searchView)
                     collapseSearchView()
                     searchRepository(query)
                     return true
@@ -79,7 +79,7 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
                 }
 
                 override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
-                    if ("" == searchView.query) {
+                    if (searchView.query.isEmpty()) {
                         finish()
                     }
                     return true
@@ -117,20 +117,20 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
         }
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
-                    clearResults()
+                    with(adapter) {
+                        clearResults()
+                    }
                     hideError()
                     showProgress()
                 }
                 .doOnTerminate { hideProgress() }
                 .subscribe({ items ->
                     with(adapter) {
-                        setItems(items)
-                        notifyDataSetChanged()
+                        updateItem(items)
                     }
                 }, {
                     showError(it.message)
                 }))
-
         //Rx 자바를 쓰기전 코드
 //        clearResults()
 //        hideError()
@@ -168,21 +168,8 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
         }
     }
 
-    private fun hideSoftKeyboard() {
-        (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager).run {
-            hideSoftInputFromWindow(searchView.windowToken, 0)
-        }
-    }
-
     private fun collapseSearchView() {
         menuSearch.collapseActionView()
-    }
-
-    private fun clearResults() {
-        with(adapter) {
-            clearItems()
-            notifyDataSetChanged()
-        }
     }
 
     private fun showProgress() {
