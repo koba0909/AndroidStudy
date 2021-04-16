@@ -3,6 +3,7 @@ package com.example.kunny_exam.ui
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -16,12 +17,14 @@ import com.example.kunny_exam.*
 import com.example.kunny_exam.data.SearchRepoData
 import com.example.kunny_exam.data.SearchRepoInfo
 import com.example.kunny_exam.data.toRepoEntity
+import com.example.kunny_exam.databinding.ActivitySearchBinding
 import com.example.kunny_exam.network.NetworkHelper
 import com.example.kunny_exam.network.RetrofitService
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import retrofit2.Call
 import retrofit2.Response
@@ -37,17 +40,17 @@ class SearchActivity : AppCompatActivity() {
 
     private var svSearch : SearchView? = null
     lateinit var menuSearch : MenuItem
-    lateinit var rvSearch : RecyclerView
 
     private val compositeDisposable : CompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_search)
 
-        rvSearch = findViewById(R.id.rv_search)
+        val binding = ActivitySearchBinding.inflate(LayoutInflater.from(this))
 
-        rvSearch.adapter = repoAdapter
+        binding.rvSearch.adapter = repoAdapter
+
+        setContentView(binding.root)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -91,18 +94,7 @@ class SearchActivity : AppCompatActivity() {
                 .subscribe { response ->
                         with(repoAdapter){
                         this.setData(response.items)
-                        compositeDisposable.add(
-                            repoAdapter.getOnItemClickObservable()
-
-                                .subscribeOn(Schedulers.io())
-                                .observeOn(Schedulers.newThread())
-                                .subscribe { item ->
-                                    searchRepoDao.add(item.toRepoEntity())
-
-                                    val intent = Intent(this@SearchActivity,
-                                        SearchRepoDetailActivity::class.java)
-                                    startActivity(intent)
-                                })
+                        compositeDisposable.add(searchRepoClick())
                     }
                 }
         compositeDisposable.add(disposable)
@@ -118,5 +110,18 @@ class SearchActivity : AppCompatActivity() {
         super.onDestroy()
 
         compositeDisposable.clear()
+    }
+
+    private fun searchRepoClick() : Disposable {
+        return repoAdapter.getOnItemClickObservable()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.newThread())
+                .subscribe { item ->
+                    searchRepoDao.add(item.toRepoEntity())
+
+                    val intent = Intent(this@SearchActivity,
+                            SearchRepoDetailActivity::class.java)
+                    startActivity(intent)
+                }
     }
 }
