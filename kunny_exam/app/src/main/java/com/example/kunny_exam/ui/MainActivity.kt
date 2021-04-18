@@ -27,24 +27,22 @@ class MainActivity : AppCompatActivity() {
     //Room DB
     private val searchRoomDB by lazy { SearchRoomDB.getInstance(this) }
     private val searchRepoDao by lazy { searchRoomDB.getRepoDao()}
+    private val repoAdapter by lazy { SearchRepoAdapter(this) }
+    private val binding by lazy { ActivityMainBinding.inflate(LayoutInflater.from(this)) }
 
     private lateinit var dbRepoList : List<SearchRepoInfo>
-    private val repoAdapter by lazy { SearchRepoAdapter(this) }
-
     private val compositeDisposable : CompositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val binding = ActivityMainBinding.inflate(LayoutInflater.from(this))
-
-        init(binding)
-        showRoomList(binding)
+        init()
+        showRoomList()
 
         setContentView(binding.root)
     }
 
-    private fun init(binding : ActivityMainBinding){
+    private fun init(){
         binding.fabMain.setOnClickListener {
             val intent = Intent(this, SearchActivity::class.java);
             startActivity(intent)
@@ -54,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         dbRepoList = ArrayList()
     }
 
-    private fun showRoomList(binding : ActivityMainBinding){
+    private fun showRoomList(){
         val disposable : Disposable = searchRepoDao.getAllRepo()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

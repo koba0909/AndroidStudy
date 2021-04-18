@@ -37,6 +37,7 @@ class SearchActivity : AppCompatActivity() {
     private val repoAdapter : SearchRepoAdapter by lazy { SearchRepoAdapter(this) }
     private val searchRoomDB : SearchRoomDB by lazy { SearchRoomDB.getInstance(this) }
     private val searchRepoDao : SearchRepoDao by lazy { searchRoomDB.getRepoDao() }
+    private val binding by lazy { ActivitySearchBinding.inflate(LayoutInflater.from(this)) }
 
     private var svSearch : SearchView? = null
     lateinit var menuSearch : MenuItem
@@ -45,8 +46,6 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val binding = ActivitySearchBinding.inflate(LayoutInflater.from(this))
 
         binding.rvSearch.adapter = repoAdapter
 
