@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.kunny_exam.common.Constants
 
-@Database(entities = [RepoEntity::class], version = 1)
+@Database(entities = [RepoEntity::class], version = 2)
 abstract class SearchRoomDB : RoomDatabase() {
     abstract fun getRepoDao() : SearchRepoDao
 
