@@ -14,6 +14,7 @@ import com.androidhuman.example.simplegithub.api.model.GithubRepo
 import com.androidhuman.example.simplegithub.api.provideGithubApi
 import com.androidhuman.example.simplegithub.data.provideSearchHistoryDao
 import com.androidhuman.example.simplegithub.databinding.ActivitySearchBinding
+import com.androidhuman.example.simplegithub.rx.AutoClearedDisposable
 import com.androidhuman.example.simplegithub.ui.repo.RepositoryActivity
 import com.androidhuman.example.simplegithub.ui.search.SearchAdapter.ItemClickListener
 import com.androidhuman.example.simplegithub.util.*
@@ -36,7 +37,10 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
     private val api: GithubApi by lazy { provideGithubApi(this) }
 
     //internal var searchCall: Call<RepoSearchResponse>? = null
-    private val disposables = CompositeDisposable()
+    //private val disposables = CompositeDisposable()
+
+    private val disposables = AutoClearedDisposable(this)
+    private val viewDisposable = AutoClearedDisposable(lifecycleOwner = this, alwaysClearOnStop = false)
 
     // 데이터베이스 생성 후 Dao 인스턴스 받기
     private val searchHistoryDao by lazy { provideSearchHistoryDao(this) }
@@ -45,17 +49,12 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        lifecycle.addObserver(disposables)
+        lifecycle.addObserver(viewDisposable)
         with(binding.rvActivitySearchList) {
             layoutManager = LinearLayoutManager(this@SearchActivity)
             adapter = this@SearchActivity.adapter
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        //searchCall?.run { cancel() }
-        disposables.clear()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

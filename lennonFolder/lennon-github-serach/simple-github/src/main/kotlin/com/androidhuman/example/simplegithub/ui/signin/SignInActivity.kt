@@ -1,5 +1,6 @@
 package com.androidhuman.example.simplegithub.ui.signin
 
+import android.arch.lifecycle.Lifecycle
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +13,7 @@ import com.androidhuman.example.simplegithub.api.model.GithubAccessToken
 import com.androidhuman.example.simplegithub.api.provideAuthApi
 import com.androidhuman.example.simplegithub.data.AuthTokenProvider
 import com.androidhuman.example.simplegithub.databinding.ActivitySignInBinding
+import com.androidhuman.example.simplegithub.rx.AutoClearedDisposable
 import com.androidhuman.example.simplegithub.ui.main.MainActivity
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -26,7 +28,9 @@ class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
 
     //internal var accessTokenCall: Call<GithubAccessToken>? = null
-    private val disposable = CompositeDisposable()
+   // private val disposable = CompositeDisposable()
+
+    private val disposable = AutoClearedDisposable(this)
 
     // 사용자 인증 토큰이 있는지 여부 확인
     private val api by lazy { provideAuthApi() }
@@ -36,6 +40,9 @@ class SignInActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        lifecycle.addObserver(disposable)
+
         binding.btnActivitySignInStart.setOnClickListener(View.OnClickListener {
             val authUri = Uri.parse("https://github.com/login/oauth/authorize?client_id=${BuildConfig.GITHUB_CLIENT_ID}")
 
@@ -51,15 +58,6 @@ class SignInActivity : AppCompatActivity() {
         if (null != authTokenProvider.token) {
             launchMainActivity()
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        // 액티비티가 화면에서 사라지는 시점에 api 호출 객체가 생성되어 있다면 api 요청 취소
-        // (?.는 null이 아니면 아래의 run 실행, null이면 null 반환)
-        //accessTokenCall?.run { cancel() }
-
-        disposable.clear()
     }
 
     override fun onNewIntent(intent: Intent) {

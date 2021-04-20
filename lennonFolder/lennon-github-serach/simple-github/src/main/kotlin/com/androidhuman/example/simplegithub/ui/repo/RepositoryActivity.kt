@@ -12,6 +12,7 @@ import com.androidhuman.example.simplegithub.api.GithubApi
 import com.androidhuman.example.simplegithub.api.model.GithubRepo
 import com.androidhuman.example.simplegithub.api.provideGithubApi
 import com.androidhuman.example.simplegithub.databinding.ActivityRepositoryBinding
+import com.androidhuman.example.simplegithub.rx.AutoClearedDisposable
 import com.androidhuman.example.simplegithub.ui.GlideApp
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -27,16 +28,20 @@ class RepositoryActivity : AppCompatActivity() {
 
     internal val api: GithubApi by lazy { provideGithubApi((this)) }
     //internal var repoCall: Call<GithubRepo>? = null
-    private val disposable = CompositeDisposable()
-    val dateFormatInResponse = SimpleDateFormat(
+    //private val disposable = CompositeDisposable()
+    private val disposables = AutoClearedDisposable(this)
+    private val dateFormatInResponse = SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ssX", Locale.getDefault())
-    val dateFormatToShow = SimpleDateFormat(
+    private val dateFormatToShow = SimpleDateFormat(
             "yyyy-MM-dd HH:mm:ss", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRepositoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        lifecycle.addObserver(disposables)
+
         val login = intent.getStringExtra(KEY_USER_LOGIN)
                 ?: throw IllegalArgumentException("No login info exists in extras")
         val repo = intent.getStringExtra(KEY_REPO_NAME)
@@ -44,15 +49,9 @@ class RepositoryActivity : AppCompatActivity() {
         showRepositoryInfo(login, repo)
     }
 
-    override fun onStop() {
-        super.onStop()
-        //repoCall?.run { cancel() }
-        disposable.clear()
-    }
-
     private fun showRepositoryInfo(login: String, repoName: String) {
 
-        disposable.add(api.getRepository(login, repoName)
+        disposables.add(api.getRepository(login, repoName)
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe{showProgress()}
                 .doOnError{hideProgress(false)}
