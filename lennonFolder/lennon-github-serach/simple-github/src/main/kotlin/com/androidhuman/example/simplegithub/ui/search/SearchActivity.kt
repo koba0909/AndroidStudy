@@ -12,13 +12,16 @@ import com.androidhuman.example.simplegithub.R
 import com.androidhuman.example.simplegithub.api.GithubApi
 import com.androidhuman.example.simplegithub.api.model.GithubRepo
 import com.androidhuman.example.simplegithub.api.provideGithubApi
+import com.androidhuman.example.simplegithub.data.provideSearchHistoryDao
 import com.androidhuman.example.simplegithub.databinding.ActivitySearchBinding
 import com.androidhuman.example.simplegithub.ui.repo.RepositoryActivity
 import com.androidhuman.example.simplegithub.ui.search.SearchAdapter.ItemClickListener
 import com.androidhuman.example.simplegithub.util.*
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 class SearchActivity : AppCompatActivity(), ItemClickListener {
@@ -34,6 +37,9 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
 
     //internal var searchCall: Call<RepoSearchResponse>? = null
     private val disposables = CompositeDisposable()
+
+    // 데이터베이스 생성 후 Dao 인스턴스 받기
+    private val searchHistoryDao by lazy { provideSearchHistoryDao(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,6 +105,13 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
     }
 
     override fun onItemClick(repository: GithubRepo) {
+
+        disposables.add(Completable.fromCallable {
+            searchHistoryDao.add(repository)
+        }
+                .subscribeOn(Schedulers.io())
+                .subscribe())
+
         val intent = Intent(this, RepositoryActivity::class.java).apply {
             putExtra(RepositoryActivity.KEY_USER_LOGIN, repository.owner.login)
             putExtra(RepositoryActivity.KEY_REPO_NAME, repository.name)

@@ -26,11 +26,11 @@ class SignInActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySignInBinding
 
     //internal var accessTokenCall: Call<GithubAccessToken>? = null
-    internal val disposable = CompositeDisposable()
+    private val disposable = CompositeDisposable()
 
     // 사용자 인증 토큰이 있는지 여부 확인
-    internal val api by lazy { provideAuthApi() }
-    internal val authTokenProvider by lazy { AuthTokenProvider(this) }
+    private val api by lazy { provideAuthApi() }
+    private val authTokenProvider by lazy { AuthTokenProvider(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
