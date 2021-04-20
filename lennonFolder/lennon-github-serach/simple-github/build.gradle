@@ -80,7 +80,7 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:1.1.1"
     kapt "android.arch.lifecycle:compiler:1.1.1"
 
-    implementation "android.arch.persistence.room:runtime:1.1.1" // 룸 라이브러리 추가
-    implementation "android.arch.persistence.room:rxjava2:1.1.1" // 룸 라이브러리 RxJava 플러그인 추가
-    kapt "android.arch.persistence.room:compiler:1.1.1" // 룸 라이브러리용 어노테이션 프로세서 추가
+    implementation "android.arch.persistence.room:runtime:1.0.0" // 룸 라이브러리 추가
+    implementation "android.arch.persistence.room:rxjava2:1.0.0" // 룸 라이브러리 RxJava 플러그인 추가
+    kapt "android.arch.persistence.room:compiler:1.0.0" // 룸 라이브러리용 어노테이션 프로세서 추가
 }
