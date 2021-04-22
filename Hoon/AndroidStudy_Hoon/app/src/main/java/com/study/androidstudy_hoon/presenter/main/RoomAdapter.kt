@@ -1,4 +1,4 @@
-package com.study.androidstudy_hoon.presenter.search
+package com.study.androidstudy_hoon.presenter.main
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -6,28 +6,20 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.study.androidstudy_hoon.data.dto.Repo
 import com.study.androidstudy_hoon.databinding.SearchResultItemBinding
-import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.Subject
 
-class SearchAdapter : ListAdapter<Repo, SearchViewHolder>(REPO_COMPARATOR) {
+class RoomAdapter : ListAdapter<Repo, RoomViewHolder>(REPO_COMPARATOR) {
 
-    private val _clickSubject = PublishSubject.create<Repo>()
-    val clickSubject: Subject<Repo>
-        get() = _clickSubject
-
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoomViewHolder {
         val binding = SearchResultItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
         )
-        return SearchViewHolder(binding, this)
+        return RoomViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RoomViewHolder, position: Int) {
         holder.bind(getItem(position))
-        holder.bindingAdapterPosition
     }
 
     companion object {

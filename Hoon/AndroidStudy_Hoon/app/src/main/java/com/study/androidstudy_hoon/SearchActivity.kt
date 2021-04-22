@@ -2,7 +2,6 @@ package com.study.androidstudy_hoon
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.View
 import android.widget.SearchView
@@ -28,7 +27,7 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySearchBinding.inflate(layoutInflater)
 
-        viewModel = ViewModelProvider(this, Injection.provideSearchViewModelFactory())
+        viewModel = ViewModelProvider(this, Injection.provideSearchViewModelFactory(applicationContext))
             .get(SearchViewModel::class.java)
 
         setContentView(binding.root)
@@ -73,6 +72,9 @@ class SearchActivity : AppCompatActivity() {
                         )
                         .addToBackStack(null)
                         .commit()
+
+                    // Room 데이터 저장
+                    viewModel.insertSearchRepoData(it)
                 })
     }
 

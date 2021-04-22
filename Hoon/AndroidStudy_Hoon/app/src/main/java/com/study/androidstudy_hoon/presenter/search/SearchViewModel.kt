@@ -5,10 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.study.androidstudy_hoon.data.dto.Repo
 import com.study.androidstudy_hoon.domain.base.BaseViewModel
+import com.study.androidstudy_hoon.domain.usecase.RoomRepoUseCase
 import com.study.androidstudy_hoon.domain.usecase.SearchRepoUseCase
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 
-class SearchViewModel(private val searchRepoUseCase: SearchRepoUseCase) : BaseViewModel() {
+class SearchViewModel(private val searchRepoUseCase: SearchRepoUseCase, private val roomRepoUseCase: RoomRepoUseCase) : BaseViewModel() {
 
     private val _searchRepoList = MutableLiveData<List<Repo>>()
     val searchRepoList: LiveData<List<Repo>>
@@ -29,6 +31,13 @@ class SearchViewModel(private val searchRepoUseCase: SearchRepoUseCase) : BaseVi
                    Log.e("Error","$it")
                 })
         )
+    }
+
+    fun insertSearchRepoData(repo: Repo) {
+        addDisposable(roomRepoUseCase.insertSearchRepo(repo)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe())
     }
 
 }

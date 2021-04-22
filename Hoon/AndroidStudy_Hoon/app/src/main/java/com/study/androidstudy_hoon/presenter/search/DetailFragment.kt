@@ -10,13 +10,13 @@ import com.study.androidstudy_hoon.data.dto.Repo
 import com.study.androidstudy_hoon.databinding.FragmentSearchDetailBinding
 
 class DetailFragment : Fragment() {
-    private var repo: Repo? = null
+    lateinit var repo: Repo
     private var binding : FragmentSearchDetailBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            repo = it.getSerializable(ARG_PARAM) as? Repo
+            repo = it.getSerializable(ARG_PARAM) as Repo
         }
     }
 
@@ -25,13 +25,14 @@ class DetailFragment : Fragment() {
         binding = FragmentSearchDetailBinding.inflate(inflater, container, false)
 
         binding?.apply {
-            repoDetailStarTextView.text = repo?.stars.toString()
-            searchDetailNameTextView.text = repo?.fullName
+            repoDetailStarTextView.text = repo.stars.toString()
+            searchDetailNameTextView.text = repo.fullName
             Glide.with(root.context)
-                    .load(repo?.owner?.avatarUrl)
+                    .load(repo.owner?.avatarUrl)
                     .into(searchDetailImageView)
-            repoDetailLanguageTextView.text = repo?.language
-            repoDetailDescriptionTextView.text = repo?.description
+            repoDetailLanguageTextView.text = repo.language
+            repoDetailDescriptionTextView.text = repo.description
+            searchDetailMainContainer.setOnTouchListener { _, _ -> true }
         }
 
         return binding?.root
@@ -46,7 +47,7 @@ class DetailFragment : Fragment() {
         private const val ARG_PARAM = "repo"
 
         @JvmStatic
-        fun newInstance(param: Repo?) =
+        fun newInstance(param: Repo) =
                 DetailFragment().apply {
                     arguments = Bundle().apply {
                         putSerializable(ARG_PARAM, param)

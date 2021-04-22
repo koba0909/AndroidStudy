@@ -36,4 +36,5 @@ ext{
     room_version = '2.2.6'
     retrofitVersion = '2.9.0'
     coroutines = '1.4.1'
+    glideVersion = '4.9.0'
 }
