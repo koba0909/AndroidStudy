@@ -7,19 +7,21 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 
-abstract class BaseFragment<B : ViewBinding> : Fragment() {
+typealias Inflate<T> = (LayoutInflater, ViewGroup?, Boolean) -> T
+
+abstract class BaseFragment<B : ViewBinding>(
+    private val inflate: Inflate<B>
+) : Fragment() {
 
     private var _binding: B? = null
     val binding get() = _binding!!
-
-    abstract fun getFragmentBinding(inflater: LayoutInflater, container: ViewGroup?): B
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = getFragmentBinding(inflater, container)
+        _binding = inflate.invoke(inflater, container, false)
         return binding.root
     }
 

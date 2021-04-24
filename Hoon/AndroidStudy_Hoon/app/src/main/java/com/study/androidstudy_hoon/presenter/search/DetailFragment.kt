@@ -1,15 +1,14 @@
 package com.study.androidstudy_hoon.presenter.search
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.study.androidstudy_hoon.data.dto.Repo
 import com.study.androidstudy_hoon.databinding.FragmentSearchDetailBinding
 import com.study.androidstudy_hoon.domain.base.BaseFragment
 
-class DetailFragment : BaseFragment<FragmentSearchDetailBinding>() {
+class DetailFragment :
+    BaseFragment<FragmentSearchDetailBinding>(FragmentSearchDetailBinding::inflate) {
 
     lateinit var repo: Repo
 
@@ -20,10 +19,8 @@ class DetailFragment : BaseFragment<FragmentSearchDetailBinding>() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
             repoDetailStarTextView.text = repo.stars.toString()
@@ -36,7 +33,6 @@ class DetailFragment : BaseFragment<FragmentSearchDetailBinding>() {
             searchDetailMainContainer.setOnTouchListener { _, _ -> true }
         }
 
-        return binding.root
     }
 
     companion object {
@@ -49,12 +45,5 @@ class DetailFragment : BaseFragment<FragmentSearchDetailBinding>() {
                     putSerializable(ARG_PARAM, param)
                 }
             }
-    }
-
-    override fun getFragmentBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentSearchDetailBinding {
-        return FragmentSearchDetailBinding.inflate(inflater, container, false)
     }
 }
