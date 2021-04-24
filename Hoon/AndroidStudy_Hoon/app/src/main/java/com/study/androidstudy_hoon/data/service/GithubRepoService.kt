@@ -8,6 +8,6 @@ import retrofit2.http.Query
 interface GithubRepoService {
     @GET("search/repositories")
     fun searchRepository(
-            @Query("q") query: String
+        @Query("q") query: String
     ): Single<RepoSearchResponse>
 }

@@ -17,10 +17,11 @@ abstract class RepoDatabase : RoomDatabase() {
         fun newRoomInstance(context: Context): RepoDatabase {
             synchronized(RepoDatabase::class) {
                 ROOM_INSTANCE = Room.databaseBuilder(
-                        context.applicationContext,
-                        RepoDatabase::class.java,
-                        "repo")
-                        .build()
+                    context.applicationContext,
+                    RepoDatabase::class.java,
+                    "repo"
+                )
+                    .build()
             }
             return ROOM_INSTANCE
         }

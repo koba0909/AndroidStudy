@@ -18,23 +18,23 @@ class SearchAdapter : ListAdapter<Repo, SearchViewHolder>(REPO_COMPARATOR) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SearchViewHolder {
         val binding = SearchResultItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
+            LayoutInflater.from(parent.context),
+            parent,
+            false
         )
         return SearchViewHolder(binding, this)
     }
 
-    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: SearchViewHolder, position: Int) =
         holder.bind(getItem(position))
-        holder.bindingAdapterPosition
-    }
 
     companion object {
         private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<Repo>() {
-            override fun areItemsTheSame(oldItem: Repo, newItem: Repo): Boolean = oldItem.fullName == newItem.fullName
+            override fun areItemsTheSame(oldItem: Repo, newItem: Repo): Boolean =
+                oldItem.fullName == newItem.fullName
 
-            override fun areContentsTheSame(oldItem: Repo, newItem: Repo): Boolean = oldItem == newItem
+            override fun areContentsTheSame(oldItem: Repo, newItem: Repo): Boolean =
+                oldItem == newItem
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.study.androidstudy_hoon
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
@@ -9,26 +8,24 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.study.androidstudy_hoon.databinding.ActivitySearchBinding
+import com.study.androidstudy_hoon.domain.base.BaseActivity
 import com.study.androidstudy_hoon.presenter.search.DetailFragment
 import com.study.androidstudy_hoon.presenter.search.SearchAdapter
 import com.study.androidstudy_hoon.presenter.search.SearchViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : BaseActivity<ActivitySearchBinding>({ ActivitySearchBinding.inflate(it) }) {
 
-    private lateinit var binding: ActivitySearchBinding
     private lateinit var viewModel: SearchViewModel
     private val searchAdapter by lazy { SearchAdapter() }
-    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySearchBinding.inflate(layoutInflater)
 
-        viewModel = ViewModelProvider(this, Injection.provideSearchViewModelFactory(applicationContext))
-            .get(SearchViewModel::class.java)
+        viewModel =
+            ViewModelProvider(this, Injection.provideSearchViewModelFactory(applicationContext))
+                .get(SearchViewModel::class.java)
 
         setContentView(binding.root)
         initObserve()
@@ -62,7 +59,7 @@ class SearchActivity : AppCompatActivity() {
             )
         }
 
-        compositeDisposable.add(
+        addDisposable(
             searchAdapter.clickSubject.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
@@ -93,10 +90,5 @@ class SearchActivity : AppCompatActivity() {
             }
         })
         return true
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        compositeDisposable.clear()
     }
 }

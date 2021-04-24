@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 
 data class Owner(
-        @PrimaryKey @field:SerializedName("id") val ownerId: Long,
-        @field:SerializedName("login") val login: String,
-        @field:SerializedName("avatar_url") val avatarUrl: String,
-): Serializable
+    @PrimaryKey @field:SerializedName("id") val ownerId: Long,
+    @field:SerializedName("login") val login: String,
+    @field:SerializedName("avatar_url") val avatarUrl: String,
+) : Serializable

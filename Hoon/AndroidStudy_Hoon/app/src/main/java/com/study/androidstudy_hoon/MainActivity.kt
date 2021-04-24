@@ -6,22 +6,20 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.study.androidstudy_hoon.databinding.ActivityMainBinding
+import com.study.androidstudy_hoon.domain.base.BaseActivity
 import com.study.androidstudy_hoon.presenter.main.MainViewModel
 import com.study.androidstudy_hoon.presenter.main.RoomAdapter
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inflate(it) }) {
 
-    private lateinit var binding: ActivityMainBinding
     lateinit var viewModel: MainViewModel
     private val roomAdapter by lazy { RoomAdapter() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
         viewModel = ViewModelProvider(this, Injection.provideMainViewModelFactory(this))
-                .get(MainViewModel::class.java)
+            .get(MainViewModel::class.java)
 
         binding.flBtnMain.setOnClickListener {
             val intent = Intent(this, SearchActivity::class.java)

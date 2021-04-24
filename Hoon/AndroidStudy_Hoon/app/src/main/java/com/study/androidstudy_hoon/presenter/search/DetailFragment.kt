@@ -8,10 +8,11 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.study.androidstudy_hoon.data.dto.Repo
 import com.study.androidstudy_hoon.databinding.FragmentSearchDetailBinding
+import com.study.androidstudy_hoon.domain.base.BaseFragment
 
-class DetailFragment : Fragment() {
+class DetailFragment : BaseFragment<FragmentSearchDetailBinding>() {
+
     lateinit var repo: Repo
-    private var binding : FragmentSearchDetailBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,27 +21,23 @@ class DetailFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        binding = FragmentSearchDetailBinding.inflate(inflater, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
 
-        binding?.apply {
+        binding.apply {
             repoDetailStarTextView.text = repo.stars.toString()
             searchDetailNameTextView.text = repo.fullName
             Glide.with(root.context)
-                    .load(repo.owner?.avatarUrl)
-                    .into(searchDetailImageView)
+                .load(repo.owner?.avatarUrl)
+                .into(searchDetailImageView)
             repoDetailLanguageTextView.text = repo.language
             repoDetailDescriptionTextView.text = repo.description
             searchDetailMainContainer.setOnTouchListener { _, _ -> true }
         }
 
-        return binding?.root
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        binding = null
+        return binding.root
     }
 
     companion object {
@@ -48,10 +45,17 @@ class DetailFragment : Fragment() {
 
         @JvmStatic
         fun newInstance(param: Repo) =
-                DetailFragment().apply {
-                    arguments = Bundle().apply {
-                        putSerializable(ARG_PARAM, param)
-                    }
+            DetailFragment().apply {
+                arguments = Bundle().apply {
+                    putSerializable(ARG_PARAM, param)
                 }
+            }
+    }
+
+    override fun getFragmentBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentSearchDetailBinding {
+        return FragmentSearchDetailBinding.inflate(inflater, container, false)
     }
 }

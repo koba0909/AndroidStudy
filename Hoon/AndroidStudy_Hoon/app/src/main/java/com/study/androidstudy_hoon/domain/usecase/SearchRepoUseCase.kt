@@ -8,8 +8,8 @@ import io.reactivex.schedulers.Schedulers
 class SearchRepoUseCase(private val githubSearchRepository: GithubSearchRepository) {
     fun getSearchResult(query: String): Single<List<Repo>> =
         githubSearchRepository.getGithubSearchRepository(query)
-                .subscribeOn(Schedulers.io())
-                .map {
-                    it.items
-                }
+            .subscribeOn(Schedulers.io())
+            .map {
+                it.items
+            }
 }

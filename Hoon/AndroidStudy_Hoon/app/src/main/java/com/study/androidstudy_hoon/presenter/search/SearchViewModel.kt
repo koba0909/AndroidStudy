@@ -10,7 +10,10 @@ import com.study.androidstudy_hoon.domain.usecase.SearchRepoUseCase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 
-class SearchViewModel(private val searchRepoUseCase: SearchRepoUseCase, private val roomRepoUseCase: RoomRepoUseCase) : BaseViewModel() {
+class SearchViewModel(
+    private val searchRepoUseCase: SearchRepoUseCase,
+    private val roomRepoUseCase: RoomRepoUseCase
+) : BaseViewModel() {
 
     private val _searchRepoList = MutableLiveData<List<Repo>>()
     val searchRepoList: LiveData<List<Repo>>
@@ -21,23 +24,25 @@ class SearchViewModel(private val searchRepoUseCase: SearchRepoUseCase, private 
         get() = _isLoading
 
     fun fetchRepoSearch(query: String?) {
-        addDisposable(searchRepoUseCase.getSearchResult(query?: "")
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe { _isLoading.value = true }
-                .doOnTerminate { _isLoading.value = false }
-                .subscribe({
-                    _searchRepoList.value = it
-                }, {
-                   Log.e("Error","$it")
-                })
+        addDisposable(searchRepoUseCase.getSearchResult(query ?: "")
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnSubscribe { _isLoading.value = true }
+            .doOnTerminate { _isLoading.value = false }
+            .subscribe({
+                _searchRepoList.value = it
+            }, {
+                Log.e("Error", "$it")
+            })
         )
     }
 
     fun insertSearchRepoData(repo: Repo) {
-        addDisposable(roomRepoUseCase.insertSearchRepo(repo)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe())
+        addDisposable(
+            roomRepoUseCase.insertSearchRepo(repo)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe()
+        )
     }
 
 }
