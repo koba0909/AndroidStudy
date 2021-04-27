@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName
 
 //GithubRepo 엔티티의 데이터가 저장될 테이블 이름을 repositories로 지정
 @Entity(tableName = "repositories")
-data class GithubRepo(
+data class GithubRepoDto(
         val name: String,
 
         @PrimaryKey @ColumnInfo(name = "full_name") val fullName: String,

@@ -1,6 +1,6 @@
 package com.androidhuman.example.simplegithub.api
 
-import com.androidhuman.example.simplegithub.api.model.GithubRepo
+import com.androidhuman.example.simplegithub.api.model.GithubRepoDto
 import com.androidhuman.example.simplegithub.api.model.RepoSearchResponse
 import io.reactivex.Observable
 import retrofit2.http.GET
@@ -12,5 +12,5 @@ interface GithubApi {
     fun searchRepository(@Query("q") query: String?): Observable<RepoSearchResponse>
 
     @GET("repos/{owner}/{name}")
-    fun getRepository(@Path("owner") ownerLogin: String?, @Path("name") repoName: String?): Observable<GithubRepo>
+    fun getRepository(@Path("owner") ownerLogin: String?, @Path("name") repoName: String?): Observable<GithubRepoDto>
 }

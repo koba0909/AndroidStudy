@@ -10,7 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import com.androidhuman.example.simplegithub.R
 import com.androidhuman.example.simplegithub.api.GithubApi
-import com.androidhuman.example.simplegithub.api.model.GithubRepo
+import com.androidhuman.example.simplegithub.api.model.GithubRepoDto
 import com.androidhuman.example.simplegithub.api.provideGithubApi
 import com.androidhuman.example.simplegithub.data.provideSearchHistoryDao
 import com.androidhuman.example.simplegithub.databinding.ActivitySearchBinding
@@ -21,7 +21,6 @@ import com.androidhuman.example.simplegithub.util.*
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.util.*
 
@@ -103,7 +102,7 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onItemClick(repository: GithubRepo) {
+    override fun onItemClick(repository: GithubRepoDto) {
 
         disposables.add(Completable.fromCallable {
             searchHistoryDao.add(repository)

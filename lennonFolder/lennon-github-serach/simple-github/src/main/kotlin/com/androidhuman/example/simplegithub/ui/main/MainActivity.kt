@@ -12,7 +12,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.androidhuman.example.simplegithub.R
-import com.androidhuman.example.simplegithub.api.model.GithubRepo
+import com.androidhuman.example.simplegithub.api.model.GithubRepoDto
 import com.androidhuman.example.simplegithub.data.provideSearchHistoryDao
 import com.androidhuman.example.simplegithub.databinding.ActivityMainBinding
 import com.androidhuman.example.simplegithub.rx.AutoClearedDisposable
@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
         }
     }
 
-    override fun onItemClick(repository: GithubRepo) {
+    override fun onItemClick(repository: GithubRepoDto) {
 
         startActivity(Intent(this, RepositoryActivity::class.java).run {
             putExtra(RepositoryActivity.KEY_REPO_NAME, repository.owner.login)
