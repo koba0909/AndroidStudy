@@ -48,15 +48,15 @@ class MainActivity : AppCompatActivity(), SearchAdapter.ItemClickListener {
         })
 
         btnSearch = binding.btnActivityMainSearch
-        btnSearch.setOnClickListener {
-            startActivity(Intent(this, SearchActivity::class.java))
-        }
+        btnSearch.setOnClickListener { goToSearch() }
 
         with(binding.rvActivityMainList) {
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = this@MainActivity.adapter
         }
     }
+
+    private fun goToSearch() = startActivity(Intent(this, SearchActivity::class.java))
 
     private fun fetchSearchHistory(): Disposable = searchHistoryDao.getHistory()
             .subscribeOn(Schedulers.io())
