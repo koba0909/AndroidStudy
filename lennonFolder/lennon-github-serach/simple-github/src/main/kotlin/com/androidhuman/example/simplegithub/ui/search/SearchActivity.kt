@@ -174,9 +174,7 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
     }
 
     private fun updateTitle(query: String) {
-        supportActionBar?.run {
-            subtitle = query
-        }
+        supportActionBar?.subtitle = query
     }
 
     private fun collapseSearchView() {
