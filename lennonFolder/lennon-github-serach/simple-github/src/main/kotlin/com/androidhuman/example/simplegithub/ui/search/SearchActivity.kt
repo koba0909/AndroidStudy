@@ -103,13 +103,7 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
     }
 
     override fun onItemClick(repository: GithubRepoDto) {
-
-        disposables.add(Completable.fromCallable {
-            searchHistoryDao.add(repository)
-        }
-                .subscribeOn(Schedulers.io())
-                .subscribe())
-
+        
         val intent = Intent(this, RepositoryActivity::class.java).apply {
             putExtra(RepositoryActivity.KEY_USER_LOGIN, repository.owner.login)
             putExtra(RepositoryActivity.KEY_REPO_NAME, repository.name)
