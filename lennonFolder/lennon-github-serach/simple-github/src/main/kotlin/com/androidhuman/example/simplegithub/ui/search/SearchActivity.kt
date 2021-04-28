@@ -127,9 +127,7 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
         }
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
-                    with(adapter) {
-                        clearResults()
-                    }
+                    adapter.clearResults()
                     hideError()
                     showProgress()
                 }
