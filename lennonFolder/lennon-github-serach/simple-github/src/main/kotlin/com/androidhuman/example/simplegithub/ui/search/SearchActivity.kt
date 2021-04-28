@@ -133,9 +133,7 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
                 }
                 .doOnTerminate { hideProgress() }
                 .subscribe({ items ->
-                    with(adapter) {
-                        updateItem(items)
-                    }
+                    adapter.updateItem(items)
                 }, {
                     showError(it.message)
                 }))
