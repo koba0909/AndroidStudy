@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">kunny_exam</string>
+    <string name="repository_no_launguage_text">No Language Specified</string>
+    <string name="repository_no_fullname_text">no_name</string>
+</resources>
