@@ -9,12 +9,11 @@ import com.google.gson.annotations.SerializedName
 //GithubRepo 엔티티의 데이터가 저장될 테이블 이름을 repositories로 지정
 @Entity(tableName = "repositories")
 data class GithubRepoDto(
-        val name: String,
-
-        @PrimaryKey @ColumnInfo(name = "full_name") val fullName: String,
-
+        @field:SerializedName("name") val name: String,
+        @ColumnInfo(name = "full_name") @field:SerializedName("full_name") @PrimaryKey
+        val fullName: String,
         @Embedded val owner: GithubOwner,
-        val description: String?,
-        val language: String?,
+        @field:SerializedName("description") val description: String?,
+        @field:SerializedName("language") val language: String?,
         @field:SerializedName("updated_at") @ColumnInfo(name = "updated_at") val updatedAt: String,
         @field:SerializedName("stargazers_count") val stars: Int)
