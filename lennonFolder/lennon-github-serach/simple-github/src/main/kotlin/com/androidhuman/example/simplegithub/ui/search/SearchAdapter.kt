@@ -1,5 +1,6 @@
 package com.androidhuman.example.simplegithub.ui.search
 
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.support.v7.widget.RecyclerView
@@ -16,15 +17,32 @@ import com.androidhuman.example.simplegithub.ui.GlideApp
  */
 class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
     private var items: MutableList<GithubRepoDto> = mutableListOf()
-    private val placeholder = ColorDrawable(Color.GRAY)
     private var listener: ItemClickListener? = null
 
     // 뷰 바인딩을 사용하면 깔삼하게 뷰홀더는 심플
-    class RepositoryHolder(val binding: ItemRepositoryBinding, listener: ItemClickListener?, items: List<GithubRepoDto>) : RecyclerView.ViewHolder(binding.root) {
-        init{
-            binding.root.setOnClickListener{
+    class RepositoryHolder(private val binding: ItemRepositoryBinding,
+                           listener: ItemClickListener?,
+                           items: List<GithubRepoDto>) : RecyclerView.ViewHolder(binding.root) {
+        init {
+            binding.root.setOnClickListener {
                 listener?.onItemClick(items[adapterPosition])
             }
+        }
+
+        fun bind(items: GithubRepoDto) {
+            with(itemView) {
+                GlideApp.with(context)
+                        .load(items.owner.avatarUrl)
+                        .placeholder(ColorDrawable(Color.GRAY))
+                        .into(binding.ivItemRepositoryProfile)
+            }
+
+            binding.tvItemRepositoryName.text = items.fullName
+            binding.tvItemRepositoryLanguage.text = if (TextUtils.isEmpty(items.language))
+                Resources.getSystem().getString(R.string.no_language_specified)
+            else
+                items.language
+
         }
     }
 
@@ -35,26 +53,13 @@ class SearchAdapter : RecyclerView.Adapter<SearchAdapter.RepositoryHolder>() {
     }
 
     override fun onBindViewHolder(holder: RepositoryHolder, position: Int) {
-        items[position].let { repo ->
-            with(holder.itemView) {
-                GlideApp.with(context)
-                        .load(repo.owner.avatarUrl)
-                        .placeholder(placeholder)
-                        .into(holder.binding.ivItemRepositoryProfile)
-
-                holder.binding.tvItemRepositoryName.text = repo.fullName
-                holder.binding.tvItemRepositoryLanguage.text = if (TextUtils.isEmpty(repo.language))
-                    context.getText(R.string.no_language_specified)
-                else
-                    repo.language
-            }
-        }
+        holder.bind(items[position])
     }
 
-     fun updateItem(items: List<GithubRepoDto>) {
-         setItems(items)
-         notifyDataSetChanged()
-     }
+    fun updateItem(items: List<GithubRepoDto>) {
+        setItems(items)
+        notifyDataSetChanged()
+    }
 
     fun clearResults() {
         clearItems()
