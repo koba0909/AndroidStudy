@@ -1,0 +1,20 @@
+ext {
+    // Build configuration
+    buildToolsVersion = '28.0.0'
+    /**컴파일 sdk 버전
+     새로 추가한 라이브러리가 최신버전일 경우
+     컴파일 sdk 버전을 올려줘야할 경우가 생김
+     */
+    compileSdkVersion = 28
+    minSdkVersion = 15
+    targetSdkVersion = 27
+
+    // Kotlin
+    kotlinVersion = '1.4.21'
+
+    // Library
+    gsonVersion = '2.7'
+    okHttpVersion = '3.8.1'
+    retrofitVersion = '2.3.0'
+    supportLibVersion = '28.0.0'
+}

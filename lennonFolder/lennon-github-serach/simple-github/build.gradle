@@ -1,0 +1,86 @@
+apply plugin: 'com.android.application'
+
+// 코틀린 안드로이드 플러그인 적용
+apply plugin: 'kotlin-android'
+
+// 코틀린 코드에서 어노테이션 프로세싱을 사용할 수 있도록 추가 적용
+apply plugin: 'kotlin-kapt'
+
+android {
+
+    buildFeatures {
+
+        viewBinding = true
+
+    }
+
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    /**
+     * 더 이상 buildToolsVersion에 신경 쓸 필요없단다.
+     * If you're using Android plugin for Gradle 3.0.0 or higher,
+     * your project automatically uses a default version of the build tools that the plugin specifies.
+     */
+    //buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        applicationId "com.androidhuman.example.simplegithubqqq"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+
+        versionCode 1
+        versionName "1.0"
+
+        buildConfigField "String", "GITHUB_CLIENT_ID",
+                project.properties["GITHUB_CLIENT_ID"] ?: "\"NOT_FOUND\""
+
+        buildConfigField "String", "GITHUB_CLIENT_SECRET",
+                project.properties["GITHUB_CLIENT_SECRET"] ?: "\"NOT_FOUND\""
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+}
+
+dependencies {
+
+    implementation "com.android.support:appcompat-v7:$supportLibVersion"
+    implementation "com.android.support:customtabs:$supportLibVersion"
+    implementation "com.android.support:design:$supportLibVersion"
+    implementation "com.android.support:recyclerview-v7:$supportLibVersion"
+    implementation "com.github.bumptech.glide:glide:4.1.1"
+    implementation "com.google.code.gson:gson:$gsonVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
+    implementation "com.squareup.okhttp3:okhttp:$okHttpVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
+
+    // 레트로핏 응답을 옵저버블로 변환해주는 라이브러리
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
+
+    implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
+    implementation "io.reactivex.rxjava2:rxjava:2.2.18"
+
+    kapt "com.github.bumptech.glide:compiler:4.1.1"
+
+    annotationProcessor "com.github.bumptech.glide:compiler:4.1.1"
+
+    implementation "android.arch.lifecycle:extensions:1.1.1"
+    kapt "android.arch.lifecycle:compiler:1.1.1"
+
+    implementation "android.arch.persistence.room:runtime:1.0.0" // 룸 라이브러리 추가
+    implementation "android.arch.persistence.room:rxjava2:1.0.0" // 룸 라이브러리 RxJava 플러그인 추가
+    kapt "android.arch.persistence.room:compiler:1.0.0" // 룸 라이브러리용 어노테이션 프로세서 추가
+}
