@@ -18,10 +18,8 @@ import com.androidhuman.example.simplegithub.rx.AutoClearedDisposable
 import com.androidhuman.example.simplegithub.ui.repo.RepositoryActivity
 import com.androidhuman.example.simplegithub.ui.search.SearchAdapter.ItemClickListener
 import com.androidhuman.example.simplegithub.util.*
-import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import java.util.*
 
 class SearchActivity : AppCompatActivity(), ItemClickListener {
@@ -103,11 +101,18 @@ class SearchActivity : AppCompatActivity(), ItemClickListener {
     }
 
     override fun onItemClick(repository: GithubRepoDto) {
-        
-        val intent = Intent(this, RepositoryActivity::class.java).apply {
+        val intent = saveSearchKeyword(repository)
+        goToRepositoryActivity(intent)
+    }
+
+    private fun saveSearchKeyword(repository: GithubRepoDto): Intent {
+        return Intent(this, RepositoryActivity::class.java).apply {
             putExtra(RepositoryActivity.KEY_USER_LOGIN, repository.owner.login)
             putExtra(RepositoryActivity.KEY_REPO_NAME, repository.name)
         }
+    }
+
+    private fun goToRepositoryActivity(intent: Intent) {
         startActivity(intent)
     }
 
