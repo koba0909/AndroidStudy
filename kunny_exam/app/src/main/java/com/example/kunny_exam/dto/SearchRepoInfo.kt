@@ -1,6 +1,6 @@
-package com.example.kunny_exam.data
+package com.example.kunny_exam.dto
 
-import com.example.kunny_exam.RepoEntity
+import com.example.kunny_exam.model.dto.RepoEntity
 import com.google.gson.annotations.SerializedName
 
 data class SearchRepoInfo(
@@ -9,7 +9,7 @@ data class SearchRepoInfo(
         @SerializedName("full_name") val full_name: String?,
         @SerializedName("language") val language : String?,
         @SerializedName("stargazers_count") val stargazers_count : Int?,
-        @SerializedName("owner") val ownerData : OwnerData?
+        @SerializedName("owner") val repoOwnerData : RepoOwnerData?
 )
 
 fun SearchRepoInfo.toRepoEntity() =
@@ -19,5 +19,5 @@ fun SearchRepoInfo.toRepoEntity() =
                 fullName = full_name ?: "",
                 language = language ?: "No language Specified",
                 stars = stargazers_count ?: 0,
-                owner = ownerData
+                repoOwner = repoOwnerData
         )

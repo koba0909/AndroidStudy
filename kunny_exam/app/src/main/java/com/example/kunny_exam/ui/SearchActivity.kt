@@ -2,7 +2,6 @@ package com.example.kunny_exam.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -11,32 +10,24 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.kunny_exam.*
-import com.example.kunny_exam.data.SearchRepoData
-import com.example.kunny_exam.data.SearchRepoInfo
-import com.example.kunny_exam.data.toRepoEntity
+import com.example.kunny_exam.dto.toRepoEntity
 import com.example.kunny_exam.databinding.ActivitySearchBinding
-import com.example.kunny_exam.network.NetworkHelper
-import com.example.kunny_exam.network.RetrofitService
-import io.reactivex.Observable
-import io.reactivex.Single
+import com.example.kunny_exam.model.database.SearchRoomDB
+import com.example.kunny_exam.service.NetworkHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import retrofit2.Call
-import retrofit2.Response
 import java.lang.Exception
 
 class SearchActivity : AppCompatActivity() {
     private val TAG = SearchActivity::class.java.name
 
-    private val retrofitService : RetrofitService by lazy { NetworkHelper(this).getRetrofitService() }
-    private val repoAdapter : SearchRepoAdapter by lazy { SearchRepoAdapter(this) }
-    private val searchRoomDB : SearchRoomDB by lazy { SearchRoomDB.getInstance(this) }
-    private val searchRepoDao : SearchRepoDao by lazy { searchRoomDB.getRepoDao() }
+    private val retrofitService by lazy { NetworkHelper(this).getRetrofitService() }
+    private val repoAdapter by lazy { SearchRepoListAdapter(this) }
+    private val searchRoomDB by lazy { SearchRoomDB.getInstance(this) }
+    private val searchRepoDao by lazy { searchRoomDB.getRepoDao() }
     private val binding by lazy { ActivitySearchBinding.inflate(LayoutInflater.from(this)) }
 
     private var svSearch : SearchView? = null
@@ -46,8 +37,6 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        binding.rvSearch.adapter = repoAdapter
 
         setContentView(binding.root)
     }
@@ -62,9 +51,12 @@ class SearchActivity : AppCompatActivity() {
         if(svSearch != null){
             svSearch!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(query: String): Boolean {
-                    getRepoListObservable(query)
-                    hideSoftKeyboard()
-                    
+                    try {
+                        getRepoListObservable(query)
+                    }catch (e : Exception){
+                        e.printStackTrace()
+                    }
+
                     return true
                 }
 
@@ -92,8 +84,9 @@ class SearchActivity : AppCompatActivity() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { response ->
                         with(repoAdapter){
-                        this.setData(response.items)
-                        compositeDisposable.add(searchRepoClick())
+                            submitList(response.items)
+                            binding.rvSearch.adapter = this
+                            compositeDisposable.add(searchRepoClick())
                     }
                 }
         compositeDisposable.add(disposable)
@@ -112,7 +105,7 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun searchRepoClick() : Disposable {
-        return repoAdapter.getOnItemClickObservable()
+        return repoAdapter. getOnItemClickObservable()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.newThread())
                 .subscribe { item ->

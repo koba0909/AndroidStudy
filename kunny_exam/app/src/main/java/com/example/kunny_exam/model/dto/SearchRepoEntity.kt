@@ -1,11 +1,11 @@
-package com.example.kunny_exam
+package com.example.kunny_exam.model.dto
 
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.kunny_exam.data.OwnerData
-import com.example.kunny_exam.data.SearchRepoInfo
+import com.example.kunny_exam.dto.RepoOwnerData
+import com.example.kunny_exam.dto.SearchRepoInfo
 import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "repositories")
@@ -17,7 +17,7 @@ class RepoEntity(
         @ColumnInfo(name = "full_name") val fullName: String,
         @SerializedName("language") val language: String?,
         @SerializedName("stargazers_count") val stars: Int,
-        @Embedded val owner: OwnerData?
+        @Embedded val repoOwner: RepoOwnerData?
 )
 
 fun RepoEntity.toSearchRepoInfo() =
@@ -27,5 +27,5 @@ fun RepoEntity.toSearchRepoInfo() =
             full_name = fullName,
             language = language,
             stargazers_count = stars,
-            ownerData = owner
+            repoOwnerData = repoOwner
         )

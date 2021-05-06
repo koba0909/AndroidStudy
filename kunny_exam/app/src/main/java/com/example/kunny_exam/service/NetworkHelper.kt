@@ -1,4 +1,4 @@
-package com.example.kunny_exam.network
+package com.example.kunny_exam.service
 
 import android.content.Context
 import retrofit2.Retrofit
@@ -11,7 +11,7 @@ class NetworkHelper(private val context : Context) {
 
     private lateinit var retrofit: Retrofit
 
-    private val apiService: RetrofitService by lazy { getRetrofitService() }
+    private lateinit var apiService : RetrofitService
 
     fun getRetrofitService(): RetrofitService {
         retrofit = Retrofit.Builder()
@@ -19,6 +19,7 @@ class NetworkHelper(private val context : Context) {
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
+        apiService = retrofit.create(RetrofitService::class.java)
         return apiService
     }
 }
